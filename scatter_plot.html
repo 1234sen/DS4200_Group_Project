@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Physical Activity Level vs Obesity Level</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #tooltip {
+            position: absolute;
+            display: none;
+            background: white;
+            border: 1px solid #34495e;
+            padding: 5px;
+            color: #34495e;
+        }
+        select {
+            margin: 10px;
+            padding: 5px;
+        }
+        h2 {
+            color: #2c3e50;
+        }
+
+        nav {
+            background-color: #005599;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 0.8rem;
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        nav a:hover {
+            background-color: #0077cc;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="main.html">Home</a>
+        <a href="correlation_heatmap.html">1. Variable Correlation</a>
+        <a href="interactive_bar_chart.html">2. Obesity Distribution</a>
+        <a href="scatter_plot.html">3. Physical Activity vs Obesity</a>
+        <a href="box_plot.html">4. Age vs Obesity</a>
+        <a href="stacked_bar.html">5. Transportation vs Obesity</a>
+    </nav>
+    <h2>Physical Activity Level vs Obesity Level</h2>
+    <label for="genderSelect">Select Gender: </label>
+    <select id="genderSelect"></select>
+    <label for="mtransSelect">Select Transportation Method: </label>
+    <select id="mtransSelect"></select>
+    <div id="scatterPlot"></div>
+    <div id="tooltip"></div>
+    <script>
+        d3.csv('ObesityDataSet_raw_and_data_sinthetic.csv').then(function(data) {
+            // Parse numeric columns
+            data.forEach(d => {
+                d.Age = +d.Age;
+                d.Height = +d.Height;
+                d.Weight = +d.Weight;
+                d.FAF = +d.FAF;
+            });
+
+            // Set canvas dimensions
+            const margin = {top: 20, right: 20, bottom: 50, left: 150};
+            const width = 800 - margin.left - margin.right;
+            const height = 600 - margin.top - margin.bottom;
+
+            // Create SVG
+            const svg = d3.select('#scatterPlot')
+                .append('svg')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom)
+                .append('g')
+                .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+            // Create scales
+            const NObeyesdadCategories = [...new Set(data.map(d => d.NObeyesdad))];
+            const yScale = d3.scaleBand()
+                .domain(NObeyesdadCategories)
+                .range([height - margin.bottom, margin.top])
+                .padding(0.1);
+
+            const xScale = d3.scaleLinear()
+                .domain([d3.min(data, d => d.FAF), d3.max(data, d => d.FAF)])
+                .range([0, width]);
+
+            // Add axes
+            svg.append('g')
+                .attr('transform', `translate(0, ${height - margin.bottom})`)
+                .call(d3.axisBottom(xScale))
+                .append('text')
+                .attr('x', width / 2)
+                .attr('y', 40)
+                .attr('fill', '#34495e')
+                .text('Physical Activity Level (FAF)');
+
+            svg.append('g')
+                .call(d3.axisLeft(yScale))
+                .append('text')
+                .attr('x', -height / 2)
+                .attr('y', -100)
+                .attr('fill', '#34495e')
+                .attr('transform', 'rotate(-90)')
+                .text('Obesity Level');
+
+            // Create tooltip
+            const tooltip = d3.select('#tooltip');
+
+            // Filter data function
+            function filterData() {
+                const selectedGender = document.getElementById('genderSelect').value;
+                const selectedMTRANS = document.getElementById('mtransSelect').value;
+                return data.filter(d => (selectedGender === 'All' || d.Gender === selectedGender) &&
+                                       (selectedMTRANS === 'All' || d.MTRANS === selectedMTRANS));
+            }
+
+            // Update chart function
+            function updatePlot() {
+                const filteredData = filterData();
+                svg.selectAll('circle').remove();
+                svg.selectAll('circle')
+                    .data(filteredData)
+                    .enter()
+                    .append('circle')
+                    .attr('cx', d => xScale(d.FAF))
+                    .attr('cy', d => yScale(d.NObeyesdad) + yScale.bandwidth() / 2)
+                    .attr('r', 5)
+                    .attr('fill', '#2980b9')
+                    .on('mouseover', function(event, d) {
+                        tooltip.style('display', 'block')
+                            .html(`Age: ${d.Age}<br>Weight: ${d.Weight}<br>Gender: ${d.Gender}<br>Transportation: ${d.MTRANS}`)
+                            .style('left', (event.pageX + 10) + 'px')
+                            .style('top', (event.pageY - 10) + 'px');
+                    })
+                    .on('mouseout', function() {
+                        tooltip.style('display', 'none');
+                    });
+            }
+
+            // Populate dropdown menus
+            const genderOptions = ['All', 'Female', 'Male'];
+            d3.select('#genderSelect')
+                .selectAll('option')
+                .data(genderOptions)
+                .enter()
+                .append('option')
+                .text(d => d)
+                .attr('value', d => d);
+
+            const mtransOptions = ['All', ...new Set(data.map(d => d.MTRANS))];
+            d3.select('#mtransSelect')
+                .selectAll('option')
+                .data(mtransOptions)
+                .enter()
+                .append('option')
+                .text(d => d)
+                .attr('value', d => d);
+
+            // Add event listeners
+            d3.select('#genderSelect').on('change', updatePlot);
+            d3.select('#mtransSelect').on('change', updatePlot);
+
+            // Initial plot
+            updatePlot();
+        });
+    </script>
+</body>
+</html>
