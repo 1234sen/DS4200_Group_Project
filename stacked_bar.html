@@ -1,5 +1,3 @@
-<!--stacked_bar.html-->
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,11 +7,6 @@
     #vis.vega-embed {
       width: 100%;
       display: flex;
-    }
-
-    #vis.vega-embed details,
-    #vis.vega-embed details summary {
-      position: relative;
     }
 
     nav {
@@ -45,7 +38,7 @@
 </head>
 <body>
 
-  <!-- Load shared header (title + nav) -->
+  <!-- Shared header -->
   <div id="shared-header"></div>
   <script>
     fetch("header.html")
@@ -56,24 +49,23 @@
   </script>
 
   <!-- Instruction section -->
-  <h2>
-    Instructions
-  </h2>
+  <h2>Instructions</h2>
   <p>
-    This normalized stacked bar chart illustrates the distribution of obesity levels across different transportation methods. Each bar represents a transportation category, and segments within each bar represent the proportion of individuals falling into each obesity category. This helps identify how transportation preferences may relate to obesity trends.
+    This normalized stacked bar chart illustrates the distribution of obesity levels across different transportation methods.
+    Each bar represents a transportation category, and segments within each bar represent the proportion of individuals falling into each obesity category.
+    Hover over any bar segment to see detailed information.
   </p>
-
 
   <!-- Chart container -->
   <div id="vis"></div>
 
   <script>
     (function(vegaEmbed) {
-      var spec = {
+      const spec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
         "data": {
           "url": "ObesityDataSet_raw_and_data_sinthetic.csv",
-          "format": {"type": "csv"}
+          "format": { "type": "csv" }
         },
         "mark": "bar",
         "encoding": {
@@ -81,9 +73,7 @@
             "field": "MTRANS",
             "type": "nominal",
             "title": "Transportation Method",
-            "axis": {
-                "labelAngle": 45
-            }
+            "axis": { "labelAngle": 45 }
           },
           "y": {
             "aggregate": "count",
@@ -95,33 +85,28 @@
             "field": "NObeyesdad",
             "type": "nominal",
             "title": "Obesity Level"
-          }
+          },
+          "tooltip": [
+            { "field": "MTRANS", "type": "nominal", "title": "Transport" },
+            { "field": "NObeyesdad", "type": "nominal", "title": "Obesity Level" },
+            { "aggregate": "count", "type": "quantitative", "title": "Count" }
+          ]
         },
         "title": "Distribution of Obesity Levels by Transportation Method",
         "width": 600,
         "height": 400,
         "config": {
-          "axis": {"labelFontSize": 12},
-          "legend": {"titleFontSize": 12},
-          "title": {"fontSize": 16}
+          "axis": { "labelFontSize": 12 },
+          "legend": { "titleFontSize": 12 },
+          "title": { "fontSize": 16 }
         }
       };
 
-      const el = document.getElementById('vis');
-      const embedOpt = {"mode": "vega-lite"};
-
-      function showError(el, error){
-        el.innerHTML = (
-          '<div style="color:red;">' +
-          '<p>JavaScript Error: ' + error.message + '</p>' +
-          "<p>This usually means there's a typo in your chart specification. " +
-          "See the javascript console for the full traceback.</p>" +
-          '</div>'
-        );
-        throw error;
-      }
-
-      vegaEmbed("#vis", spec, embedOpt).catch(error => showError(el, error));
+      vegaEmbed("#vis", spec, { mode: "vega-lite" }).catch(err => {
+        document.getElementById("vis").innerHTML =
+          "<p style='color:red;'>Error: " + err.message + "</p>";
+        console.error(err);
+      });
     })(vegaEmbed);
   </script>
 
