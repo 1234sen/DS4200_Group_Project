@@ -1,27 +1,80 @@
 <!--main.html-->
 
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+
+
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Obesity Level Data Visualization Analysis</title>-->
+<!--    <style>-->
+<!--        body {-->
+<!--            font-family: Arial, sans-serif;-->
+<!--            margin: 20px;-->
+<!--            padding: 0;-->
+<!--        }-->
+<!--        h1, h2 {-->
+<!--            color: #2c3e50;-->
+<!--        }-->
+<!--        p {-->
+<!--            max-width: 800px;-->
+<!--            color: #34495e;-->
+<!--        }-->
+<!--        .content {-->
+<!--            max-width: 100%;-->
+<!--            overflow-x: hidden;-->
+<!--        }-->
+<!--        nav {-->
+<!--            background-color: #005599;-->
+<!--            display: flex;-->
+<!--            justify-content: center;-->
+<!--            gap: 20px;-->
+<!--            padding: 0.8rem;-->
+<!--            margin-bottom: 20px;-->
+<!--        }-->
+<!--        nav a {-->
+<!--            color: white;-->
+<!--            text-decoration: none;-->
+<!--            font-weight: bold;-->
+<!--            padding: 0.5rem 1rem;-->
+<!--            border-radius: 5px;-->
+<!--            transition: background-color 0.3s;-->
+<!--        }-->
+<!--        nav a:hover {-->
+<!--            background-color: #0077cc;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Obesity Level Data Visualization Analysis</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            padding: 0;
         }
-        h1, h2 {
-            color: #2c3e50;
-        }
-        p {
-            max-width: 800px;
+        #tooltip {
+            position: absolute;
+            display: none;
+            background: white;
+            border: 1px solid #34495e;
+            padding: 5px;
             color: #34495e;
         }
-        .content {
-            max-width: 100%;
-            overflow-x: hidden;
+        select {
+            margin: 10px;
+            padding: 5px;
         }
+        h2 {
+            color: #2c3e50;
+        }
+
         nav {
             background-color: #005599;
             display: flex;
@@ -44,16 +97,24 @@
     </style>
 </head>
 <body>
-    <nav>
-        <a href="main.html">Home</a>
-        <a href="correlation_heatmap.html">1. Variable Correlation</a>
-        <a href="interactive_bar_chart.html">2. Obesity Distribution</a>
-        <a href="scatter_plot.html">3. Physical Activity vs Obesity</a>
-        <a href="box_plot.html">4. Age vs Obesity</a>
-        <a href="stacked_bar.html">5. Transportation vs Obesity</a>
-    </nav>
 
-    <h1>Obesity Level Data Visualization Analysis</h1>
+
+
+
+     <!-- Shared header and nav loaded from external file -->
+    <div id="shared-header"></div>
+     <script>
+        fetch("header.html")
+            .then(response => response.text())
+            .then(data => {
+            document.getElementById("shared-header").innerHTML = data;
+        });
+    </script>
+
+
+
+
+<!--    <h1>Obesity Level Data Visualization Analysis</h1>-->
     <p><strong>Project Introduction</strong>: This project aims to analyze the relationship between obesity levels and factors such as gender, age, physical activity level, and transportation methods through data visualization. Tasks include creating heatmaps to show variable correlations, interactive bar charts to analyze obesity distribution, interactive scatter plots to explore the relationship between physical activity and obesity, and other charts to provide supplementary insights.</p>
     
     <p><strong>Data Description</strong>: The dataset contains 4 records (expandable), sourced from public obesity research data, with 17 attributes: Gender, Age, Height, Weight, family_history_with_overweight, FAVC (high-calorie food frequency), FCVC (vegetable intake frequency), NCP (main meal count), CAEC (food intake between meals), SMOKE, CH2O (water intake), SCC (calorie monitoring), FAF (physical activity level), TUE (electronic device usage time), CALC (alcohol consumption frequency), MTRANS (transportation method), NObeyesdad (obesity level).</p>

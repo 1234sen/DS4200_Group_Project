@@ -40,20 +40,17 @@
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
 </head>
 <body>
-<header style="text-align: center; padding: 20px 0; background-color: #005599;">
-    <h1 style="margin: 0; font-family: Arial, sans-serif; font-size: 2rem; color: white;">
-      Obesity Level Data Visualization Analysis
-    </h1>
-  </header>
 
-  <nav>
-    <a href="main.html">Home</a>
-    <a href="correlation_heatmap.html">1. Variable Correlation</a>
-    <a href="interactive_bar_chart.html">2. Obesity Distribution</a>
-    <a href="scatter_plot.html">3. Physical Activity vs Obesity</a>
-    <a href="box_plot.html">4. Age vs Obesity</a>
-    <a href="stacked_bar.html">5. Transportation vs Obesity</a>
-</nav>
+  <!-- Shared header and nav loaded from external file -->
+  <div id="shared-header"></div>
+  <script>
+    fetch("header.html")
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("shared-header").innerHTML = data;
+      });
+  </script>
+
 
     <h2>
     Instructions
