@@ -67,8 +67,20 @@
       pointer-events: none;
       box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
     }
+    section.findings {
+      max-width: 800px;
+      margin: 40px auto;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    section.findings h3 {
+      color: #2c3e50;
+    }
+    section.findings ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
   </style>
-  <!-- Load D3 library -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
@@ -100,6 +112,16 @@
   </div>
   <div id="tooltip"></div>
 
+  <!-- Findings Section -->
+  <section class="findings">
+    <h3>Findings - Scatterplot</h3>
+    <ul>
+      <li>Individuals (both male and female) in higher obesity categories tend to have lower FAF values.</li>
+      <li>People with normal weight or overweight have more variation but trend higher on FAF.</li>
+      <li>These findings vary depending on the mode of transportation.</li>
+    </ul>
+  </section>
+
   <script>
     d3.csv('ObesityDataSet_raw_and_data_sinthetic.csv').then(function(data) {
       data.forEach(function(d) {
@@ -118,7 +140,6 @@
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
 
-      // Add title to the graph
       svgContainer.append("text")
         .attr("x", (width + margin.left + margin.right) / 2)
         .attr("y", margin.top / 2)
@@ -190,10 +211,7 @@
           .attr("r", 5)
           .attr("fill", "#2980b9")
           .on("mouseover", function(event, d) {
-            d3.select(this)
-              .transition()
-              .duration(200)
-              .attr("r", 8);
+            d3.select(this).transition().duration(200).attr("r", 8);
             tooltip.style("display", "block")
               .html(`<strong>Age:</strong> ${d.Age}<br>
                      <strong>Weight:</strong> ${d.Weight}<br>
@@ -203,10 +221,7 @@
               .style("top", (event.pageY - 10) + "px");
           })
           .on("mouseout", function() {
-            d3.select(this)
-              .transition()
-              .duration(200)
-              .attr("r", 5);
+            d3.select(this).transition().duration(200).attr("r", 5);
             tooltip.style("display", "none");
           })
           .merge(circles)
