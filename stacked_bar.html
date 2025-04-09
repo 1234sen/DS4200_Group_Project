@@ -4,7 +4,7 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>Stacked Bar Chart - Obesity & Transportation</title>
+  <title>Filtered Bar Chart - Obesity & Transportation</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -78,18 +78,18 @@
       .catch(console.error);
   </script>
 
-  <h2>Distribution of Obesity Levels by Transportation Method</h2>
+<body>
+  <h2>Proportion of Selected Obesity Level by Transportation Method</h2>
   <p class="description">
-    This normalized stacked bar chart illustrates the distribution of obesity levels across different transportation methods.
-    Each bar represents a transportation category, and segments within each bar display the proportion of individuals in each obesity category.
-    Hover over any segment for detailed information.
+    Select an obesity level to view its proportion across different transportation methods. The chart dynamically filters and updates based on your choice.
   </p>
 
   <div id="vis"></div>
 
+
   <!-- Findings Section -->
   <section class="findings">
-  <h3>Findings - Normalized Stacked Bar Chart</h3>
+  <h3>Findings - Filtered Bar Chart</h3>
   <ul>
     <li><strong>Automobile users</strong> show a high proportion of Obesity Type I and Type II, with lower representation of normal or underweight categories.</li>
     <li><strong>Bike users</strong> have a majority of individuals in the Normal Weight and Overweight Level I categories, suggesting healthier weight distribution.</li>
@@ -102,48 +102,80 @@
   <p><strong>Further Research:</strong> Explore socioeconomic or environmental factors influencing transportation choices and obesity distribution.</p>
   </section>
 
-
   <script>
     (function(vegaEmbed) {
       const spec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
         "data": {
           "url": "ObesityDataSet_raw_and_data_sinthetic.csv",
-          "format": {"type": "csv"}
+          "format": { "type": "csv" }
         },
+        "params": [
+          {
+            "name": "obesity_level",
+            "value": "Obesity_Type_I",
+            "bind": {
+              "input": "select",
+              "options": [
+                "Insufficient_Weight",
+                "Normal_Weight",
+                "Overweight_Level_I",
+                "Overweight_Level_II",
+                "Obesity_Type_I",
+                "Obesity_Type_II",
+                "Obesity_Type_III"
+              ],
+              "name": "Select Obesity Level: "
+            }
+          }
+        ],
+        "transform": [
+          { "filter": "datum.NObeyesdad === obesity_level" },
+          {
+            "aggregate": [{ "op": "count", "as": "count" }],
+            "groupby": ["MTRANS"]
+          },
+          {
+            "window": [{ "op": "sum", "field": "count", "as": "Total" }]
+          },
+          {
+            "calculate": "datum.count / datum.Total",
+            "as": "Proportion"
+          }
+        ],
         "mark": "bar",
         "encoding": {
           "x": {
             "field": "MTRANS",
             "type": "nominal",
             "title": "Transportation Method",
-            "axis": {"labelAngle": 45}
+            "sort": "-y",
+            "axis": { "labelAngle": 45 }
           },
           "y": {
-            "aggregate": "count",
-            "stack": "normalize",
+            "field": "Proportion",
             "type": "quantitative",
-            "title": "Proportion (%)"
+            "title": "Proportion (%)",
+            "axis": {
+              "format": ".0%",
+              "titleColor": "#34495e"
+            }
           },
           "color": {
-            "field": "NObeyesdad",
-            "type": "nominal",
-            "title": "Obesity Level"
+            "value": "#f39c12"
           },
           "tooltip": [
-            {"field": "MTRANS", "type": "nominal", "title": "Transport"},
-            {"field": "NObeyesdad", "type": "nominal", "title": "Obesity Level"},
-            {"aggregate": "count", "type": "quantitative", "title": "Count"}
+            { "field": "MTRANS", "type": "nominal", "title": "Transport" },
+            { "field": "Proportion", "type": "quantitative", "title": "Proportion", "format": ".1%" }
           ]
         },
-        "title": "Distribution of Obesity Levels by Transportation Method",
+        "title": {
+          "text": "Proportion of Selected Obesity Level by Transportation",
+          "fontSize": 18,
+          "anchor": "middle"
+        },
         "width": 600,
-        "height": 400,
-        "config": {
-          "axis": {"labelFontSize": 12},
-          "legend": {"titleFontSize": 12},
-          "title": {"fontSize": 16}
-        }
+        "height": 400
       };
 
       vegaEmbed("#vis", spec, { mode: "vega-lite" }).catch(function(err) {
@@ -155,6 +187,9 @@
   </script>
 </body>
 </html>
+
+
+
 
 
 
