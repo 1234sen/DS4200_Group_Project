@@ -46,6 +46,19 @@
       width: 100%;
       margin-top: 20px;
     }
+    section.findings {
+      max-width: 800px;
+      margin: 40px auto;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    section.findings h3 {
+      color: #2c3e50;
+    }
+    section.findings ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
   </style>
   <!-- Load Vega libraries -->
   <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
@@ -69,6 +82,18 @@
   </p>
 
   <div id="vis"></div>
+
+  <!-- Findings Section -->
+  <section class="findings">
+    <h3>Findings - Boxplot</h3>
+    <ul>
+      <li>Normal and Overweight groups have higher median water intake.</li>
+      <li>Obesity Types I–III show lower intake and less variability.</li>
+      <li>Underweight group drinks less but shows more variation.</li>
+      <li>Outliers suggest inconsistent hydration in some groups.</li>
+      <li>Overall: water intake decreases as obesity severity increases.</li>
+    </ul>
+  </section>
 
   <script>
     (function(vegaEmbed) {
@@ -118,6 +143,7 @@
   </script>
 </body>
 </html>
+
 
 
 
