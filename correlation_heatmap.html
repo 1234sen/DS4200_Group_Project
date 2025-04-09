@@ -46,6 +46,19 @@
       width: 100%;
       margin-top: 20px;
     }
+    section.findings {
+      max-width: 800px;
+      margin: 40px auto;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    section.findings h3 {
+      color: #2c3e50;
+    }
+    section.findings ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
   </style>
   <!-- Load Plotly and PapaParse libraries -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -68,6 +81,17 @@
   </p>
 
   <div id="vis"></div>
+
+  <!-- Findings Section -->
+  <section class="findings">
+    <h3>Findings - Correlation Heatmap</h3>
+    <ul>
+      <li>Weight has a strong positive correlation with obesity level (as expected).</li>
+      <li>FAF (physical activity frequency) and CH2O (water intake) show a negative correlation with obesity.</li>
+      <li>TUE (time using technology) shows a mild positive correlation with obesity.</li>
+      <li>This suggests sedentary behavior (high TUE) and low physical activity/water intake contribute to obesity risk.</li>
+    </ul>
+  </section>
 
   <script>
     function calculateCorrelationMatrix(data, columns) {
@@ -159,5 +183,6 @@
   </script>
 </body>
 </html>
+
 
 
