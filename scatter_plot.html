@@ -114,13 +114,16 @@
 
   <!-- Findings Section -->
   <section class="findings">
-    <h3>Findings - Scatterplot</h3>
-    <ul>
-      <li>Individuals (both male and female) in higher obesity categories tend to have lower FAF values.</li>
-      <li>People with normal weight or overweight have more variation but trend higher on FAF.</li>
-      <li>These findings vary depending on the mode of transportation.</li>
-    </ul>
+  <h3>Findings - Scatterplot</h3>
+  <ul>
+    <li>Individuals with higher obesity classifications (especially Obesity Type II and III) tend to cluster around lower physical activity levels (FAF between 0 and 1).</li>
+    <li>Normal weight and insufficient weight individuals display a broader spread in physical activity, with some outliers having very high activity levels.</li>
+    <li><strong>Gender Differences:</strong> Female individuals in Obesity Type III show relatively low physical activity. Males in Obesity Type II also show dense clustering at low FAF values.</li>
+    <li><strong>Transportation Influence:</strong> Among males using public transportation, low physical activity still aligns with higher obesity categories. Automobile users (especially male) exhibit very limited physical activity and a stronger concentration in Obesity Type II and I.</li>
+    <li>Overall, the chart supports a negative trend between physical activity and obesity level — lower activity is more common in higher obesity classes, particularly in males and those using passive transport modes.</li>
+  </ul>
   </section>
+
 
   <script>
     d3.csv('ObesityDataSet_raw_and_data_sinthetic.csv').then(function(data) {
