@@ -4,11 +4,18 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Interactive Bar Chart - Obesity Distribution</title>
+  <title>Interactive Obesity Distribution Bar Chart</title>
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
     #vis.vega-embed {
       width: 100%;
       display: flex;
+      justify-content: center;
+      margin-top: 20px;
     }
 
     nav {
@@ -32,14 +39,24 @@
     nav a:hover {
       background-color: #0077cc;
     }
+
+    h2 {
+      text-align: center;
+    }
+
+    p.description {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 20px auto;
+    }
   </style>
 
+  <!-- Load Vega, Vega-Lite & Vega-Embed libraries -->
   <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
 </head>
 <body>
-
   <!-- Shared header -->
   <div id="shared-header"></div>
   <script>
@@ -50,10 +67,11 @@
       });
   </script>
 
-  <h2>Instructions</h2>
-  <p>
-    This bar chart shows the distribution of obesity levels across the population.
-    Use the dropdown filters to explore patterns by gender and age group.
+  <h2>Distribution of Obesity Levels by Gender and Age Group</h2>
+  <p class="description">
+    This interactive bar chart displays the distribution of obesity levels within the population.
+    Use the dropdown filters to explore patterns by gender and age group. Hover over each bar
+    to see detailed counts.
   </p>
 
   <div id="vis"></div>
@@ -98,13 +116,24 @@
             "filter": "age_filter === 'All' || datum.age_group === age_filter"
           }
         ],
-        "mark": "bar",
+        "selection": {
+          "hover": {
+            "type": "single",
+            "on": "mouseover",
+            "empty": "none"
+          }
+        },
+        "mark": {
+          "type": "bar",
+          "cornerRadius": 3
+        },
         "encoding": {
           "x": {
             "field": "NObeyesdad",
             "type": "nominal",
             "title": "Obesity Level",
-            "axis": {"labelAngle": 45}
+            "axis": {"labelAngle": 45},
+            "sort": {"op": "count", "order": "descending"}
           },
           "y": {
             "aggregate": "count",
@@ -114,12 +143,24 @@
           "color": {
             "field": "NObeyesdad",
             "type": "nominal",
-            "legend": null
-          }
+            "title": "Obesity Level"
+          },
+          "opacity": {
+            "condition": {"selection": "hover", "value": 1},
+            "value": 0.8
+          },
+          "tooltip": [
+            {"field": "NObeyesdad", "type": "nominal", "title": "Obesity Level"},
+            {"aggregate": "count", "type": "quantitative", "title": "Total Count"}
+          ]
         },
-        "title": "Obesity Distribution by Filter",
         "width": 600,
         "height": 400,
+        "title": {
+          "text": "Distribution of Obesity Levels by Gender and Age Group",
+          "fontSize": 18,
+          "anchor": "middle"
+        },
         "config": {
           "axis": {"labelFontSize": 12},
           "title": {"fontSize": 16}
@@ -132,6 +173,5 @@
       });
     })(vegaEmbed);
   </script>
-
 </body>
 </html>
