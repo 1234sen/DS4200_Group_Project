@@ -1,16 +1,16 @@
 <!--stacked_bar.html-->
 
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
   <meta charset="UTF-8">
   <title>Stacked Bar Chart - Obesity & Transportation</title>
   <style>
-    #vis.vega-embed {
-      width: 100%;
-      display: flex;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      color: #333;
     }
-
     nav {
       background-color: #005599;
       display: flex;
@@ -19,65 +19,56 @@
       padding: 0.8rem;
       margin-bottom: 20px;
     }
-
     nav a {
-      color: white;
+      color: #fff;
       text-decoration: none;
       font-weight: bold;
       padding: 0.5rem 1rem;
       border-radius: 5px;
       transition: background-color 0.3s;
     }
-
     nav a:hover {
       background-color: #0077cc;
     }
-
-    /* Basic styling for title and description */
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      line-height: 1.6;
-      color: #333;
-    }
-
     h2 {
       text-align: center;
-      margin-bottom: 10px;
+      color: #2c3e50;
     }
-
-    p {
-      max-width: 800px;
-      margin: 0 auto 20px auto;
+    p.description {
       text-align: center;
+      max-width: 800px;
+      margin: 0 auto 20px;
+      font-size: 16px;
+    }
+    #vis {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin-top: 20px;
     }
   </style>
-
+  <!-- Load Vega libraries -->
   <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
 </head>
 <body>
-
-  <!-- Shared header -->
+  <!-- Load the unified page header -->
   <div id="shared-header"></div>
   <script>
     fetch("header.html")
       .then(response => response.text())
-      .then(data => {
-        document.getElementById("shared-header").innerHTML = data;
-      });
+      .then(data => document.getElementById("shared-header").innerHTML = data)
+      .catch(console.error);
   </script>
 
-  <!-- Chart Description section -->
   <h2>Distribution of Obesity Levels by Transportation Method</h2>
-  <p>
+  <p class="description">
     This normalized stacked bar chart illustrates the distribution of obesity levels across different transportation methods.
-    Each bar represents a transportation category, and segments within each bar display the proportion of individuals
-    in each obesity category. Hover over any segment for detailed information.
+    Each bar represents a transportation category, and segments within each bar display the proportion of individuals in each obesity category.
+    Hover over any segment for detailed information.
   </p>
 
-  <!-- Chart container -->
   <div id="vis"></div>
 
   <script>
@@ -86,7 +77,7 @@
         "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
         "data": {
           "url": "ObesityDataSet_raw_and_data_sinthetic.csv",
-          "format": { "type": "csv" }
+          "format": {"type": "csv"}
         },
         "mark": "bar",
         "encoding": {
@@ -94,7 +85,7 @@
             "field": "MTRANS",
             "type": "nominal",
             "title": "Transportation Method",
-            "axis": { "labelAngle": 45 }
+            "axis": {"labelAngle": 45}
           },
           "y": {
             "aggregate": "count",
@@ -108,29 +99,29 @@
             "title": "Obesity Level"
           },
           "tooltip": [
-            { "field": "MTRANS", "type": "nominal", "title": "Transport" },
-            { "field": "NObeyesdad", "type": "nominal", "title": "Obesity Level" },
-            { "aggregate": "count", "type": "quantitative", "title": "Count" }
+            {"field": "MTRANS", "type": "nominal", "title": "Transport"},
+            {"field": "NObeyesdad", "type": "nominal", "title": "Obesity Level"},
+            {"aggregate": "count", "type": "quantitative", "title": "Count"}
           ]
         },
         "title": "Distribution of Obesity Levels by Transportation Method",
         "width": 600,
         "height": 400,
         "config": {
-          "axis": { "labelFontSize": 12 },
-          "legend": { "titleFontSize": 12 },
-          "title": { "fontSize": 16 }
+          "axis": {"labelFontSize": 12},
+          "legend": {"titleFontSize": 12},
+          "title": {"fontSize": 16}
         }
       };
 
-      vegaEmbed("#vis", spec, { mode: "vega-lite" }).catch(err => {
+      vegaEmbed("#vis", spec, { mode: "vega-lite" }).catch(function(err) {
         document.getElementById("vis").innerHTML =
           "<p style='color:red;'>Error: " + err.message + "</p>";
         console.error(err);
       });
     })(vegaEmbed);
   </script>
-
 </body>
 </html>
+
 

@@ -1,19 +1,16 @@
 <!--correlation_heatmap.html-->
 
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <title>Correlation Heatmap of Obesity Dataset Variables</title>
   <style>
-    /* Center the heatmap visualization */
-    #vis {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      margin: 20px 0;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      color: #333;
     }
-    /* Navigation styling */
     nav {
       background-color: #005599;
       display: flex;
@@ -23,7 +20,7 @@
       margin-bottom: 20px;
     }
     nav a {
-      color: white;
+      color: #fff;
       text-decoration: none;
       font-weight: bold;
       padding: 0.5rem 1rem;
@@ -33,7 +30,6 @@
     nav a:hover {
       background-color: #0077cc;
     }
-    /* Page title styling */
     h2 {
       text-align: center;
       color: #2c3e50;
@@ -41,60 +37,49 @@
     p.description {
       text-align: center;
       max-width: 800px;
-      margin: 0 auto 20px auto;
+      margin: 0 auto 20px;
       font-size: 16px;
-      color: #2c3e50;
+    }
+    #vis {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin-top: 20px;
     }
   </style>
-
-  <!-- Plotly and PapaParse libraries -->
+  <!-- Load Plotly and PapaParse libraries -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 </head>
 <body>
-
-  <!-- Shared header -->
+  <!-- Load the unified page header -->
   <div id="shared-header"></div>
   <script>
     fetch("header.html")
-      .then(res => res.text())
-      .then(html => {
-        document.getElementById("shared-header").innerHTML = html;
-      });
+      .then(response => response.text())
+      .then(data => document.getElementById("shared-header").innerHTML = data)
+      .catch(console.error);
   </script>
 
   <h2>Correlation Heatmap of Numerical Variables</h2>
   <p class="description">
     This heatmap visualizes the pairwise correlation between numerical variables in the obesity dataset.
-    <br>
-    <strong>Red</strong> tones indicate strong positive correlation, <strong>blue</strong> tones indicate strong negative correlation,
-    and values near 0 indicate little to no linear relationship.
+    Red tones indicate strong positive correlation, blue tones indicate strong negative correlation, and values near 0 indicate little to no linear relationship.
   </p>
 
   <div id="vis"></div>
 
   <script>
-    // Function to calculate the correlation matrix using the Pearson correlation coefficient
     function calculateCorrelationMatrix(data, columns) {
       const matrix = [];
-
-      function mean(arr) {
-        return arr.reduce((a, b) => a + b, 0) / arr.length;
-      }
-
-      function stddev(arr, avg) {
-        return Math.sqrt(arr.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / arr.length);
-      }
-
+      function mean(arr) { return arr.reduce((a, b) => a + b, 0) / arr.length; }
+      function stddev(arr, avg) { return Math.sqrt(arr.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / arr.length); }
       function pearson(x, y) {
-        const avgX = mean(x);
-        const avgY = mean(y);
-        const stdX = stddev(x, avgX);
-        const stdY = stddev(y, avgY);
+        const avgX = mean(x), avgY = mean(y);
+        const stdX = stddev(x, avgX), stdY = stddev(y, avgY);
         const cov = x.reduce((sum, xi, i) => sum + (xi - avgX) * (y[i] - avgY), 0) / x.length;
         return cov / (stdX * stdY);
       }
-
       for (let i = 0; i < columns.length; i++) {
         const row = [];
         const col1 = columns[i];
@@ -102,7 +87,6 @@
         for (let j = 0; j < columns.length; j++) {
           const col2 = columns[j];
           const y = data.map(d => parseFloat(d[col2])).filter(v => !isNaN(v));
-          // Use the shortest of the two arrays to ensure equal length
           const minLen = Math.min(x.length, y.length);
           const corr = pearson(x.slice(0, minLen), y.slice(0, minLen));
           row.push(parseFloat(corr.toFixed(2)));
@@ -112,21 +96,15 @@
       return matrix;
     }
 
-    // Parse CSV data using PapaParse
     Papa.parse("ObesityDataSet_raw_and_data_sinthetic.csv", {
       download: true,
       header: true,
       dynamicTyping: true,
       complete: function(results) {
         const rawData = results.data;
-        // Filter out rows with all null/empty values
         const data = rawData.filter(row => Object.values(row).some(v => v !== null && v !== ''));
-
-        // Define the numerical columns for correlation calculation
         const numericCols = ["Age", "Height", "Weight", "FCVC", "NCP", "CH2O", "FAF", "TUE"];
         const corrMatrix = calculateCorrelationMatrix(data, numericCols);
-
-        // Create annotations for each cell in the heatmap
         const annotations = [];
         for (let i = 0; i < numericCols.length; i++) {
           for (let j = 0; j < numericCols.length; j++) {
@@ -142,14 +120,12 @@
             });
           }
         }
-
-        // Define the heatmap trace using Plotly with a diverging color scale
         const trace = {
           z: corrMatrix,
           x: numericCols,
           y: numericCols,
           type: 'heatmap',
-          colorscale: 'RdBu',  // Diverging scale, appropriate for correlations (-1 to 1)
+          colorscale: 'RdBu',
           zmin: -1,
           zmax: 1,
           showscale: true,
@@ -158,8 +134,6 @@
             titleside: 'right'
           }
         };
-
-        // Configure layout with clear titles and axis labels
         const layout = {
           title: {
             text: 'Correlation Heatmap of Obesity Dataset Variables',
@@ -169,29 +143,21 @@
           annotations: annotations,
           xaxis: {
             tickangle: -45,
-            title: {
-              text: 'Numerical Variables',
-              font: { size: 14, color: '#34495e' }
-            }
+            title: { text: 'Numerical Variables', font: { size: 14, color: '#34495e' } }
           },
           yaxis: {
             autorange: 'reversed',
-            title: {
-              text: 'Numerical Variables',
-              font: { size: 14, color: '#34495e' }
-            }
+            title: { text: 'Numerical Variables', font: { size: 14, color: '#34495e' } }
           },
           width: 800,
           height: 800,
           margin: { t: 100 }
         };
-
-        // Plot the heatmap in a responsive container
         Plotly.newPlot('vis', [trace], layout, {responsive: true});
       }
     });
   </script>
-
 </body>
 </html>
+
 

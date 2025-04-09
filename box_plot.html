@@ -1,19 +1,16 @@
 <!--box_plot.html-->
 
 <!DOCTYPE html>
-<html>
+<html lang="zh">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <title>Box Plot of Age Distribution by Obesity Level</title>
   <style>
-    /* Center the visualization container */
-    #vis {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      margin: 20px 0;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      color: #333;
     }
-    /* Navigation styling */
     nav {
       background-color: #005599;
       display: flex;
@@ -23,7 +20,7 @@
       margin-bottom: 20px;
     }
     nav a {
-      color: white;
+      color: #fff;
       text-decoration: none;
       font-weight: bold;
       padding: 0.5rem 1rem;
@@ -33,7 +30,6 @@
     nav a:hover {
       background-color: #0077cc;
     }
-    /* Page title styling */
     h2 {
       text-align: center;
       color: #2c3e50;
@@ -41,27 +37,29 @@
     p.description {
       text-align: center;
       max-width: 800px;
-      margin: 0 auto 20px auto;
+      margin: 0 auto 20px;
       font-size: 16px;
-      color: #2c3e50;
+    }
+    #vis {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin-top: 20px;
     }
   </style>
-
-  <!-- Vega libraries for chart rendering -->
+  <!-- Load Vega libraries -->
   <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
 </head>
 <body>
-
-  <!-- Shared header -->
+  <!-- Load the unified page header -->
   <div id="shared-header"></div>
   <script>
     fetch("header.html")
-      .then(res => res.text())
-      .then(html => {
-        document.getElementById("shared-header").innerHTML = html;
-      });
+      .then(response => response.text())
+      .then(data => document.getElementById("shared-header").innerHTML = data)
+      .catch(console.error);
   </script>
 
   <h2>Box Plot of Age Distribution by Obesity Level</h2>
@@ -111,25 +109,15 @@
         }
       };
 
-      const el = document.getElementById('vis');
-      const embedOpt = {"mode": "vega-lite"};
-
-      function showError(el, error){
-        el.innerHTML = (
-          '<div style="color:red;">' +
-          '<p>JavaScript Error: ' + error.message + '</p>' +
-          "<p>This usually means there's a typo in your chart specification. " +
-          "See the javascript console for details.</p>" +
-          '</div>'
-        );
-        throw error;
-      }
-
-      vegaEmbed("#vis", spec, embedOpt).catch(error => showError(el, error));
+      vegaEmbed("#vis", spec, {mode: "vega-lite"}).catch(function(error) {
+        document.getElementById("vis").innerHTML =
+          "<p style='color:red;'>Error: " + error.message + "</p>";
+        console.error(error);
+      });
     })(vegaEmbed);
   </script>
-
 </body>
 </html>
+
 
 

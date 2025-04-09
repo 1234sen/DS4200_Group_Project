@@ -1,242 +1,234 @@
 <!--scatter_plot.html-->
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <title>Physical Activity Level vs Obesity Level</title>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        #tooltip {
-            position: absolute;
-            display: none;
-            background: white;
-            border: 1px solid #34495e;
-            padding: 8px;
-            color: #34495e;
-            font-size: 14px;
-            border-radius: 4px;
-            pointer-events: none;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
-        }
-        select {
-            margin: 10px;
-            padding: 5px;
-            font-size: 14px;
-        }
-        h2 {
-            color: #2c3e50;
-            text-align: center;
-        }
-        p.description {
-            max-width: 800px;
-            margin: 0 auto 20px auto;
-            text-align: center;
-            font-size: 16px;
-            color: #2c3e50;
-        }
-        nav {
-            background-color: #005599;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 0.8rem;
-            margin-bottom: 20px;
-        }
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        nav a:hover {
-            background-color: #0077cc;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Physical Activity Level vs Obesity Level</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      color: #333;
+    }
+    nav {
+      background-color: #005599;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 0.8rem;
+      margin-bottom: 20px;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    nav a:hover {
+      background-color: #0077cc;
+    }
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    p.description {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 20px;
+      font-size: 16px;
+    }
+    #vis {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin-top: 20px;
+    }
+    #scatterPlot {
+      width: 800px;
+      height: 600px;
+    }
+    select {
+      margin: 10px;
+      padding: 5px;
+      font-size: 14px;
+    }
+    #tooltip {
+      position: absolute;
+      display: none;
+      background: white;
+      border: 1px solid #34495e;
+      padding: 8px;
+      color: #34495e;
+      font-size: 14px;
+      border-radius: 4px;
+      pointer-events: none;
+      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+    }
+  </style>
+  <!-- Load D3 library -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-    <!-- Shared header and navigation loaded from an external file -->
-    <div id="shared-header"></div>
-    <script>
-        fetch("header.html")
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById("shared-header").innerHTML = data;
-            });
-    </script>
+  <!-- Load the unified page header -->
+  <div id="shared-header"></div>
+  <script>
+    fetch("header.html")
+      .then(response => response.text())
+      .then(data => document.getElementById("shared-header").innerHTML = data)
+      .catch(console.error);
+  </script>
 
-    <h2>Physical Activity Level vs Obesity Level</h2>
-    <p class="description">
-        This scatter plot visualizes the relationship between an individual’s physical activity level (FAF) and their obesity classification.
-        Each dot represents a person, and the chart allows you to filter data by gender and transportation method.
-        Hover over the dots to view details such as Age, Weight, Gender, and Transportation.
-    </p>
+  <h2>Physical Activity Level vs Obesity Level</h2>
+  <p class="description">
+    This scatter plot visualizes the relationship between an individual’s physical activity level (FAF) and their obesity classification.
+    Each dot represents a person, and the chart allows you to filter data by gender and transportation method. Hover over the dots to view details such as Age, Weight, Gender, and Transportation.
+  </p>
 
-    <div style="text-align:center;">
-        <label for="genderSelect">Select Gender: </label>
-        <select id="genderSelect"></select>
-        <label for="mtransSelect">Select Transportation Method: </label>
-        <select id="mtransSelect"></select>
-    </div>
+  <div style="text-align:center;">
+    <label for="genderSelect">Select Gender: </label>
+    <select id="genderSelect"></select>
+    <label for="mtransSelect">Select Transportation Method: </label>
+    <select id="mtransSelect"></select>
+  </div>
 
+  <div id="vis">
     <div id="scatterPlot"></div>
-    <div id="tooltip"></div>
+  </div>
+  <div id="tooltip"></div>
 
-    <script>
-        d3.csv('ObesityDataSet_raw_and_data_sinthetic.csv').then(function(data) {
-            // Parse numeric columns for consistency
-            data.forEach(d => {
-                d.Age = +d.Age;
-                d.Height = +d.Height;
-                d.Weight = +d.Weight;
-                d.FAF = +d.FAF;
-            });
+  <script>
+    d3.csv('ObesityDataSet_raw_and_data_sinthetic.csv').then(function(data) {
+      data.forEach(function(d) {
+        d.Age = +d.Age;
+        d.Height = +d.Height;
+        d.Weight = +d.Weight;
+        d.FAF = +d.FAF;
+      });
 
-            // Set canvas dimensions
-            const margin = {top: 20, right: 20, bottom: 60, left: 150};
-            const width = 800 - margin.left - margin.right;
-            const height = 600 - margin.top - margin.bottom;
+      const margin = {top: 20, right: 20, bottom: 60, left: 150};
+      const width = 800 - margin.left - margin.right;
+      const height = 600 - margin.top - margin.bottom;
 
-            // Create SVG and group container
-            const svg = d3.select('#scatterPlot')
-                .append('svg')
-                .attr('width', width + margin.left + margin.right)
-                .attr('height', height + margin.top + margin.bottom)
-                .append('g')
-                .attr('transform', `translate(${margin.left}, ${margin.top})`);
+      const svg = d3.select("#scatterPlot")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-            // Create scales
-            // Alphabetically sort the unique obesity categories for a consistent y-axis order.
-            const NObeyesdadCategories = [...new Set(data.map(d => d.NObeyesdad))].sort();
-            const yScale = d3.scaleBand()
-                .domain(NObeyesdadCategories)
-                .range([height, 0])
-                .padding(0.1);
+      const NObeyesdadCategories = [...new Set(data.map(d => d.NObeyesdad))].sort();
+      const yScale = d3.scaleBand()
+        .domain(NObeyesdadCategories)
+        .range([height, 0])
+        .padding(0.1);
 
-            const xExtent = d3.extent(data, d => d.FAF);
-            const xScale = d3.scaleLinear()
-                .domain([xExtent[0], xExtent[1]])
-                .nice()
-                .range([0, width]);
+      const xExtent = d3.extent(data, d => d.FAF);
+      const xScale = d3.scaleLinear()
+        .domain([xExtent[0], xExtent[1]])
+        .nice()
+        .range([0, width]);
 
-            // Add X-axis
-            const xAxis = d3.axisBottom(xScale);
-            svg.append('g')
-                .attr('transform', `translate(0, ${height})`)
-                .call(xAxis)
-                .append('text')
-                .attr('x', width / 2)
-                .attr('y', 45)
-                .attr('fill', '#34495e')
-                .style('text-anchor', 'middle')
-                .style('font-size', '14px')
-                .style('font-weight', 'bold')
-                .text('Physical Activity Level (FAF)');
+      const xAxis = d3.axisBottom(xScale);
+      svg.append("g")
+        .attr("transform", `translate(0, ${height})`)
+        .call(xAxis)
+        .append("text")
+        .attr("x", width / 2)
+        .attr("y", 45)
+        .attr("fill", "#34495e")
+        .style("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("font-weight", "bold")
+        .text("Physical Activity Level (FAF)");
 
-            // Add Y-axis
-            const yAxis = d3.axisLeft(yScale);
-            svg.append('g')
-                .call(yAxis)
-                .append('text')
-                .attr('transform', 'rotate(-90)')
-                .attr('x', -height / 2)
-                .attr('y', -110)
-                .attr('fill', '#34495e')
-                .style('text-anchor', 'middle')
-                .style('font-size', '14px')
-                .style('font-weight', 'bold')
-                .text('Obesity Level');
+      const yAxis = d3.axisLeft(yScale);
+      svg.append("g")
+        .call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -110)
+        .attr("fill", "#34495e")
+        .style("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("font-weight", "bold")
+        .text("Obesity Level");
 
-            // Create tooltip for interactive details
-            const tooltip = d3.select('#tooltip');
+      const tooltip = d3.select("#tooltip");
 
-            // Function to filter data based on dropdown selections
-            function filterData() {
-                const selectedGender = document.getElementById('genderSelect').value;
-                const selectedMTRANS = document.getElementById('mtransSelect').value;
-                return data.filter(d =>
-                    (selectedGender === 'All' || d.Gender === selectedGender) &&
-                    (selectedMTRANS === 'All' || d.MTRANS === selectedMTRANS)
-                );
-            }
+      function filterData() {
+        const selectedGender = document.getElementById("genderSelect").value;
+        const selectedMTRANS = document.getElementById("mtransSelect").value;
+        return data.filter(d =>
+          (selectedGender === "All" || d.Gender === selectedGender) &&
+          (selectedMTRANS === "All" || d.MTRANS === selectedMTRANS)
+        );
+      }
 
-            // Update chart with filtered data
-            function updatePlot() {
-                const filteredData = filterData();
+      function updatePlot() {
+        const filteredData = filterData();
+        const circles = svg.selectAll("circle").data(filteredData, d => d.ID);
+        circles.exit().remove();
+        circles.enter()
+          .append("circle")
+          .attr("cx", d => xScale(d.FAF))
+          .attr("cy", d => yScale(d.NObeyesdad) + yScale.bandwidth() / 2)
+          .attr("r", 5)
+          .attr("fill", "#2980b9")
+          .on("mouseover", function(event, d) {
+            d3.select(this)
+              .transition()
+              .duration(200)
+              .attr("r", 8);
+            tooltip.style("display", "block")
+              .html(`<strong>Age:</strong> ${d.Age}<br>
+                     <strong>Weight:</strong> ${d.Weight}<br>
+                     <strong>Gender:</strong> ${d.Gender}<br>
+                     <strong>Transportation:</strong> ${d.MTRANS}`)
+              .style("left", (event.pageX + 10) + "px")
+              .style("top", (event.pageY - 10) + "px");
+          })
+          .on("mouseout", function() {
+            d3.select(this)
+              .transition()
+              .duration(200)
+              .attr("r", 5);
+            tooltip.style("display", "none");
+          })
+          .merge(circles)
+          .transition()
+          .duration(500)
+          .attr("cx", d => xScale(d.FAF))
+          .attr("cy", d => yScale(d.NObeyesdad) + yScale.bandwidth() / 2);
+      }
 
-                // Bind data and update circles with transition effects
-                const circles = svg.selectAll('circle')
-                    .data(filteredData, d => d.ID);  // if there is a unique identifier, else use index
+      const genderOptions = ["All", "Female", "Male"];
+      d3.select("#genderSelect")
+        .selectAll("option")
+        .data(genderOptions)
+        .enter()
+        .append("option")
+        .text(d => d)
+        .attr("value", d => d);
 
-                // Remove exiting circles
-                circles.exit().remove();
+      const mtransOptions = ["All", ...new Set(data.map(d => d.MTRANS))];
+      d3.select("#mtransSelect")
+        .selectAll("option")
+        .data(mtransOptions)
+        .enter()
+        .append("option")
+        .text(d => d)
+        .attr("value", d => d);
 
-                // Append new circles
-                circles.enter()
-                    .append('circle')
-                    .attr('cx', d => xScale(d.FAF))
-                    .attr('cy', d => yScale(d.NObeyesdad) + yScale.bandwidth() / 2)
-                    .attr('r', 5)
-                    .attr('fill', '#2980b9')
-                    .on('mouseover', function(event, d) {
-                        d3.select(this)
-                          .transition()
-                          .duration(200)
-                          .attr('r', 8);
-                        tooltip.style('display', 'block')
-                            .html(`<strong>Age:</strong> ${d.Age}<br>
-                                   <strong>Weight:</strong> ${d.Weight}<br>
-                                   <strong>Gender:</strong> ${d.Gender}<br>
-                                   <strong>Transportation:</strong> ${d.MTRANS}`)
-                            .style('left', (event.pageX + 10) + 'px')
-                            .style('top', (event.pageY - 10) + 'px');
-                    })
-                    .on('mouseout', function() {
-                        d3.select(this)
-                          .transition()
-                          .duration(200)
-                          .attr('r', 5);
-                        tooltip.style('display', 'none');
-                    })
-                    .merge(circles)  // update existing circles
-                    .transition()
-                    .duration(500)
-                    .attr('cx', d => xScale(d.FAF))
-                    .attr('cy', d => yScale(d.NObeyesdad) + yScale.bandwidth() / 2);
-            }
+      d3.select("#genderSelect").on("change", updatePlot);
+      d3.select("#mtransSelect").on("change", updatePlot);
 
-            // Populate dropdown menus
-            const genderOptions = ['All', 'Female', 'Male'];
-            d3.select('#genderSelect')
-                .selectAll('option')
-                .data(genderOptions)
-                .enter()
-                .append('option')
-                .text(d => d)
-                .attr('value', d => d);
-
-            const mtransOptions = ['All', ...new Set(data.map(d => d.MTRANS))];
-            d3.select('#mtransSelect')
-                .selectAll('option')
-                .data(mtransOptions)
-                .enter()
-                .append('option')
-                .text(d => d)
-                .attr('value', d => d);
-
-            // Add event listeners to update plot on selection change
-            d3.select('#genderSelect').on('change', updatePlot);
-            d3.select('#mtransSelect').on('change', updatePlot);
-
-            // Draw the initial plot
-            updatePlot();
-        });
-    </script>
+      updatePlot();
+    });
+  </script>
 </body>
 </html>
+
