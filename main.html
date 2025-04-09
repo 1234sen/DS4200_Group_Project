@@ -4,11 +4,17 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Interactive Bar Chart - Obesity Distribution</title>
+  <title>Interactive Obesity Data Dashboard</title>
   <style>
-    #vis.vega-embed {
-      width: 100%;
-      display: flex;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    h2, h3 {
+      color: #2c3e50;
     }
 
     nav {
@@ -32,60 +38,140 @@
     nav a:hover {
       background-color: #0077cc;
     }
-  </style>
 
-  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    ul {
+      padding-left: 20px;
+    }
+
+    ul li {
+      margin-bottom: 10px;
+    }
+
+    .section {
+      max-width: 900px;
+      margin: 0 auto 40px auto;
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: #2c3e50;
+      margin-top: 1rem;
+    }
+
+    a {
+      color: #005599;
+    }
+  </style>
 </head>
 <body>
 
+  <!-- Shared header -->
+  <div id="shared-header"></div>
+  <script>
+    fetch("header.html")
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("shared-header").innerHTML = data;
+      });
+  </script>
+
+  <div class="section">
+    <h2>Topic Introduction</h2>
+    <ul>
+      <li>Obesity is a major health metric linked to chronic illness.</li>
+      <li>We are leveraging data to understand how physical and lifestyle factors predict obesity.</li>
+    </ul>
+
+    <h3>Why It Matters</h3>
+    <ul>
+      <li>Enables personalized health recommendations.</li>
+      <li>Promotes early intervention for obesity-related conditions.</li>
+    </ul>
+  </div>
 
 
-     <!-- Shared header and nav loaded from external file -->
-    <div id="shared-header"></div>
-     <script>
-        fetch("header.html")
-            .then(response => response.text())
-            .then(data => {
-            document.getElementById("shared-header").innerHTML = data;
-        });
-    </script>
+  <div class="section">
+  <h2>Data Description</h2>
+  <p>
+    Our analysis uses the
+    <a href="https://archive.ics.uci.edu/dataset/544/estimation+of+obesity+levels+based+on+eating+habits+and+physical+condition" target="_blank">
+      “Estimation of Obesity Levels Based On Eating Habits and Physical Condition”
+    </a>
+    from UC Irvine Machine Learning Repository. The dataset includes synthetic and real data collected from individuals, capturing various lifestyle and health-related behaviors.
+  </p>
+  <p>
+    It contains <strong>2111 records</strong> and <strong>17 attributes</strong>. The target variable, <code>NObeyesdad</code>, categorizes obesity levels into 7 classes:
+    Insufficient Weight, Normal Weight, Overweight Level I, Overweight Level II, Obesity Type I, Obesity Type II, and Obesity Type III.
+  </p>
+  <p>
+    The remaining 16 features represent demographic (e.g., age, gender), anthropometric (height, weight), and lifestyle attributes such as physical activity frequency, food intake habits, water consumption, and time spent on electronic devices.
+  </p>
+  </div>
 
 
-
-    <!--Obesity Level Data Visualization Analysis-->
-    <p><strong>Project Introduction</strong>: This project aims to analyze the relationship between obesity levels and factors such as gender, age, physical activity level, and transportation methods through data visualization. Tasks include creating heatmaps to show variable correlations, interactive bar charts to analyze obesity distribution, interactive scatter plots to explore the relationship between physical activity and obesity, and other charts to provide supplementary insights.</p>
-
-    <p><strong>Data Description</strong>: The dataset contains 4 records (expandable), sourced from public obesity research data, with 17 attributes: Gender, Age, Height, Weight, family_history_with_overweight, FAVC (high-calorie food frequency), FCVC (vegetable intake frequency), NCP (main meal count), CAEC (food intake between meals), SMOKE, CH2O (water intake), SCC (calorie monitoring), FAF (physical activity level), TUE (electronic device usage time), CALC (alcohol consumption frequency), MTRANS (transportation method), NObeyesdad (obesity level).</p>
-
-    <p><strong>References</strong>:<br>
-        <a href="https://pandas.pydata.org/docs/">Pandas Documentation</a><br>
-        <a href="https://d3js.org/">D3.js Documentation</a>
-    </p>
-
-    <h2>1. Variable Correlation Heatmap</h2>
-    <p><strong>Key Points</strong>: The heatmap shows correlations between numerical variables, for example, weight has a strong positive correlation with obesity level. Interactive features allow users to hover to view specific values.</p>
+  <div class="section">
+    <h2>1. Correlation Heatmap</h2>
+    <p><strong>Key Insight:</strong> The heatmap shows correlations between numerical variables, for example, weight has a strong positive correlation with obesity level.
+      Interactive features allow users to hover to view specific values.</p>
     <p><a href="correlation_heatmap.html">View Heatmap Visualization</a></p>
+  </div>
 
-    <h2>2. Interactive Obesity Level Distribution Bar Chart</h2>
-    <p><strong>Key Points</strong>: The bar chart shows the population distribution of obesity levels. Users can filter data by gender or age group through dropdown menus to discover obesity patterns in specific groups.</p>
+  <div class="section">
+    <h2>2. Obesity Distribution by Gender & Age</h2>
+    <p><strong>Key Insight:</strong> The bar chart shows the population distribution of obesity levels. Users can filter data by gender or age group through dropdown menus to discover obesity patterns in specific groups.
+    </p>
     <p><a href="interactive_bar_chart.html">View Bar Chart Visualization</a></p>
+  </div>
 
-    <h2>3. Physical Activity Level vs Obesity Level Interactive Scatter Plot</h2>
-    <p><strong>Key Points</strong>: The scatter plot shows the relationship between physical activity level (FAF) and obesity level. Hovering displays individual details, and filtering features reveal the influence of gender and transportation methods.</p>
+  <div class="section">
+    <h2>3. Physical Activity vs Obesity (Scatter Plot)</h2>
+    <p><strong>Key Insight:</strong> cy) The scatter plot shows the relationship between physical activity level (FAF) and obesity level. Hovering displays individual details,
+      and filtering features reveal the influence of gender and transportation methods.</p>
     <p><a href="scatter_plot.html">View Scatter Plot Visualization</a></p>
+  </div>
 
-    <h2>4. Age vs Obesity Level Box Plot</h2>
-    <p><strong>Key Points</strong>: The box plot shows the age distribution across different obesity levels, revealing that obesity may be related to age groups.</p>
+  <div class="section">
+    <h2>4. Age Distribution by Obesity Category (Boxplot)</h2>
+    <p><strong>Key Insight:</strong> This box plot illustrates the variation in age across different obesity categories. Each box represents the age distribution for a specific obesity level,
+      showing the median, quartiles, and outliers.</p>
     <p><a href="box_plot.html">View Box Plot Visualization</a></p>
+  </div>
 
-    <h2>5. Transportation Method vs Obesity Level Stacked Bar Chart</h2>
-    <p><strong>Key Points</strong>: The stacked bar chart shows the association between transportation methods and obesity levels, suggesting that walking may be associated with lower obesity levels.</p>
+  <div class="section">
+    <h2>5. Transportation Method & Obesity (Stacked Bar)</h2>
+    <p><strong>Key Insight:</strong> This normalized stacked bar chart illustrates the distribution of obesity levels across different transportation methods.
+      Each bar represents a transportation category, and segments within each bar display the proportion of individuals in each obesity category. Hover over any segment for detailed information.</p>
     <p><a href="stacked_bar.html">View Stacked Bar Chart Visualization</a></p>
+  </div>
 
-    <h2>Summary</h2>
-    <p><strong>Findings</strong>: 1) Weight and obesity level are highly correlated, and family history of overweight may also be a risk factor; 2) Individuals with higher physical activity levels tend to have lower obesity levels; 3) Transportation methods may affect obesity, with walkers having lower obesity rates.<br>
-       <strong>Future Work</strong>: Increase sample size, analyze interaction effects between eating habits and obesity, and explore time-series data to observe obesity trends.</p>
+  <div class="section">
+    <h2>Conclusions</h2>
+    <ul>
+      <li>Lifestyle factors (activity, hydration, tech use) show strong links to obesity.</li>
+      <li>Higher physical activity and water intake correlate with lower obesity.</li>
+      <li>Sedentary behavior and low hydration are more common in severe obesity categories.</li>
+      <li>Gender and obesity trends suggest the need for tailored interventions.</li>
+      <li>Incentivize more active methods of transportation.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Future Work</h2>
+    <ul>
+      <li>Explore longitudinal data to assess causal relationships.</li>
+      <li>Build predictive tools for early obesity risk detection.</li>
+      <li>Incorporate more demographic diversity and social determinants of health.</li>
+      <li>Expand website features for personalized health recommendations.</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>References</h3>
+    <p>
+      <a href="https://pandas.pydata.org/docs/">Pandas Documentation</a><br>
+      <a href="https://d3js.org/">D3.js Documentation</a><br>
+      <a href="https://archive.ics.uci.edu/dataset/544/estimation+of+obesity+levels+based+on+eating+habits+and+physical+condition">UCI Datasets</a>
+    </p>
+  </div>
 </body>
 </html>
