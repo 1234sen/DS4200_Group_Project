@@ -86,20 +86,19 @@
 
   <div id="vis"></div>
 
-
   <!-- Findings Section -->
   <section class="findings">
-  <h3>Findings - Filtered Bar Chart</h3>
-  <ul>
-    <li><strong>Automobile users</strong> show a high proportion of Obesity Type I and Type II, with lower representation of normal or underweight categories.</li>
-    <li><strong>Bike users</strong> have a majority of individuals in the Normal Weight and Overweight Level I categories, suggesting healthier weight distribution.</li>
-    <li><strong>Motorbike users</strong> also show higher proportions of obesity, especially Obesity Type I, and fewer in Normal or Insufficient Weight.</li>
-    <li><strong>Public transportation users</strong> have a fairly balanced distribution across all obesity categories, including noticeable proportions in both Obesity Type II and Normal Weight.</li>
-    <li><strong>Walking users</strong> show the healthiest distribution overall, with the highest share of Normal Weight and very few individuals in Obesity Type II or III.</li>
-  </ul>
+    <h3>Findings - Filtered Bar Chart</h3>
+    <ul>
+      <li><strong>Automobile users</strong> show a high proportion of Obesity Type I and Type II, with lower representation of normal or underweight categories.</li>
+      <li><strong>Bike users</strong> have a majority of individuals in the Normal Weight and Overweight Level I categories, suggesting healthier weight distribution.</li>
+      <li><strong>Motorbike users</strong> also show higher proportions of obesity, especially Obesity Type I, and fewer in Normal or Insufficient Weight.</li>
+      <li><strong>Public transportation users</strong> have a fairly balanced distribution across all obesity categories, including noticeable proportions in both Obesity Type II and Normal Weight.</li>
+      <li><strong>Walking users</strong> show the healthiest distribution overall, with the highest share of Normal Weight and very few individuals in Obesity Type II or III.</li>
+    </ul>
 
-  <p><strong>Health Intervention Opportunities:</strong> Encourage active transportation such as walking and biking to support healthier weight outcomes.</p>
-  <p><strong>Further Research:</strong> Explore socioeconomic or environmental factors influencing transportation choices and obesity distribution.</p>
+    <p><strong>Health Intervention Opportunities:</strong> Encourage active transportation such as walking and biking to support healthier weight outcomes.</p>
+    <p><strong>Further Research:</strong> Explore socioeconomic or environmental factors influencing transportation choices and obesity distribution.</p>
   </section>
 
   <script>
@@ -130,13 +129,16 @@
           }
         ],
         "transform": [
+          {
+            "joinaggregate": [
+              { "op": "count", "as": "Total" }
+            ],
+            "groupby": ["MTRANS"]
+          },
           { "filter": "datum.NObeyesdad === obesity_level" },
           {
             "aggregate": [{ "op": "count", "as": "count" }],
-            "groupby": ["MTRANS"]
-          },
-          {
-            "window": [{ "op": "sum", "field": "count", "as": "Total" }]
+            "groupby": ["MTRANS", "Total"]
           },
           {
             "calculate": "datum.count / datum.Total",
@@ -187,6 +189,8 @@
   </script>
 </body>
 </html>
+
+
 
 
 
