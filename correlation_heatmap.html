@@ -4,14 +4,16 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Correlation Heatmap</title>
+  <title>Correlation Heatmap of Obesity Dataset Variables</title>
   <style>
+    /* Center the heatmap visualization */
     #vis {
       width: 100%;
       display: flex;
       justify-content: center;
+      margin: 20px 0;
     }
-
+    /* Navigation styling */
     nav {
       background-color: #005599;
       display: flex;
@@ -20,7 +22,6 @@
       padding: 0.8rem;
       margin-bottom: 20px;
     }
-
     nav a {
       color: white;
       text-decoration: none;
@@ -29,12 +30,24 @@
       border-radius: 5px;
       transition: background-color 0.3s;
     }
-
     nav a:hover {
       background-color: #0077cc;
     }
+    /* Page title styling */
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    p.description {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 20px auto;
+      font-size: 16px;
+      color: #2c3e50;
+    }
   </style>
 
+  <!-- Plotly and PapaParse libraries -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 </head>
@@ -50,17 +63,18 @@
       });
   </script>
 
-  <h2>Instructions</h2>
-  <p>
-    This heatmap visualizes the pairwise correlation between numerical variables in the dataset.
-    The color intensity and the numerical values indicate the strength and direction of the correlation:
-    <strong>red tones</strong> represent positive correlation, <strong>blue tones</strong> represent negative correlation,
-    and values closer to ±1 indicate stronger relationships. Use this visualization to identify which variables are most strongly related to each other.
+  <h2>Correlation Heatmap of Numerical Variables</h2>
+  <p class="description">
+    This heatmap visualizes the pairwise correlation between numerical variables in the obesity dataset.
+    <br>
+    <strong>Red</strong> tones indicate strong positive correlation, <strong>blue</strong> tones indicate strong negative correlation,
+    and values near 0 indicate little to no linear relationship.
   </p>
 
   <div id="vis"></div>
 
   <script>
+    // Function to calculate the correlation matrix using the Pearson correlation coefficient
     function calculateCorrelationMatrix(data, columns) {
       const matrix = [];
 
@@ -88,27 +102,31 @@
         for (let j = 0; j < columns.length; j++) {
           const col2 = columns[j];
           const y = data.map(d => parseFloat(d[col2])).filter(v => !isNaN(v));
+          // Use the shortest of the two arrays to ensure equal length
           const minLen = Math.min(x.length, y.length);
           const corr = pearson(x.slice(0, minLen), y.slice(0, minLen));
           row.push(parseFloat(corr.toFixed(2)));
         }
         matrix.push(row);
       }
-
       return matrix;
     }
 
+    // Parse CSV data using PapaParse
     Papa.parse("ObesityDataSet_raw_and_data_sinthetic.csv", {
       download: true,
       header: true,
       dynamicTyping: true,
       complete: function(results) {
         const rawData = results.data;
+        // Filter out rows with all null/empty values
         const data = rawData.filter(row => Object.values(row).some(v => v !== null && v !== ''));
 
+        // Define the numerical columns for correlation calculation
         const numericCols = ["Age", "Height", "Weight", "FCVC", "NCP", "CH2O", "FAF", "TUE"];
         const corrMatrix = calculateCorrelationMatrix(data, numericCols);
 
+        // Create annotations for each cell in the heatmap
         const annotations = [];
         for (let i = 0; i < numericCols.length; i++) {
           for (let j = 0; j < numericCols.length; j++) {
@@ -118,47 +136,57 @@
               text: corrMatrix[i][j].toFixed(2),
               showarrow: false,
               font: {
-                color: Math.abs(corrMatrix[i][j]) > 0.5 ? 'white' : 'black'
+                color: Math.abs(corrMatrix[i][j]) > 0.5 ? 'white' : 'black',
+                size: 12
               }
             });
           }
         }
 
+        // Define the heatmap trace using Plotly with a diverging color scale
         const trace = {
           z: corrMatrix,
           x: numericCols,
           y: numericCols,
           type: 'heatmap',
-          colorscale: 'RdBu',
+          colorscale: 'RdBu',  // Diverging scale, appropriate for correlations (-1 to 1)
           zmin: -1,
           zmax: 1,
           showscale: true,
           colorbar: {
-            title: 'Correlation'
+            title: 'Correlation',
+            titleside: 'right'
           }
         };
 
+        // Configure layout with clear titles and axis labels
         const layout = {
           title: {
-            text: 'Correlation Heatmap of Variables',
+            text: 'Correlation Heatmap of Obesity Dataset Variables',
             x: 0.5,
             font: { size: 22 }
           },
           annotations: annotations,
           xaxis: {
             tickangle: -45,
-            ticks: '',
-            side: 'bottom'
+            title: {
+              text: 'Numerical Variables',
+              font: { size: 14, color: '#34495e' }
+            }
           },
           yaxis: {
-            ticks: '',
-            autorange: 'reversed'
+            autorange: 'reversed',
+            title: {
+              text: 'Numerical Variables',
+              font: { size: 14, color: '#34495e' }
+            }
           },
           width: 800,
           height: 800,
           margin: { t: 100 }
         };
 
+        // Plot the heatmap in a responsive container
         Plotly.newPlot('vis', [trace], layout, {responsive: true});
       }
     });
@@ -166,3 +194,4 @@
 
 </body>
 </html>
+
