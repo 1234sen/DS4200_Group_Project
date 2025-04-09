@@ -1,3 +1,5 @@
+<!--stacked_bar.html-->
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,6 +32,25 @@
     nav a:hover {
       background-color: #0077cc;
     }
+
+    /* Basic styling for title and description */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    p {
+      max-width: 800px;
+      margin: 0 auto 20px auto;
+      text-align: center;
+    }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
@@ -48,12 +69,12 @@
       });
   </script>
 
-  <!-- Instruction section -->
-  <h2>Instructions</h2>
+  <!-- Chart Description section -->
+  <h2>Distribution of Obesity Levels by Transportation Method</h2>
   <p>
     This normalized stacked bar chart illustrates the distribution of obesity levels across different transportation methods.
-    Each bar represents a transportation category, and segments within each bar represent the proportion of individuals falling into each obesity category.
-    Hover over any bar segment to see detailed information.
+    Each bar represents a transportation category, and segments within each bar display the proportion of individuals
+    in each obesity category. Hover over any segment for detailed information.
   </p>
 
   <!-- Chart container -->
@@ -112,3 +133,4 @@
 
 </body>
 </html>
+
