@@ -84,7 +84,8 @@
   <h2>Physical Activity Level vs Obesity Level</h2>
   <p class="description">
     This scatter plot visualizes the relationship between an individual’s physical activity level (FAF) and their obesity classification.
-    Each dot represents a person, and the chart allows you to filter data by gender and transportation method. Hover over the dots to view details such as Age, Weight, Gender, and Transportation.
+    Each dot represents a person, and the chart allows you to filter data by gender and transportation method.
+    Hover over the dots to view details such as Age, Weight, Gender, and Transportation.
   </p>
 
   <div style="text-align:center;">
@@ -108,15 +109,25 @@
         d.FAF = +d.FAF;
       });
 
-      const margin = {top: 20, right: 20, bottom: 60, left: 150};
+      const margin = {top: 50, right: 20, bottom: 60, left: 150};
       const width = 800 - margin.left - margin.right;
       const height = 600 - margin.top - margin.bottom;
 
-      const svg = d3.select("#scatterPlot")
+      const svgContainer = d3.select("#scatterPlot")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
+        .attr("height", height + margin.top + margin.bottom);
+
+      // Add title to the graph
+      svgContainer.append("text")
+        .attr("x", (width + margin.left + margin.right) / 2)
+        .attr("y", margin.top / 2)
+        .attr("text-anchor", "middle")
+        .style("font-size", "20px")
+        .style("font-weight", "bold")
+        .text("Physical Activity Level vs Obesity Level");
+
+      const svg = svgContainer.append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
       const NObeyesdadCategories = [...new Set(data.map(d => d.NObeyesdad))].sort();
@@ -231,4 +242,5 @@
   </script>
 </body>
 </html>
+
 
