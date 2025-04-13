@@ -1,0 +1,75 @@
+<!--box_plot_extract_altair.html-->
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>Embedded Altair Box Plot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      color: #333;
+      text-align: center;
+    }
+    #shared-header {
+      margin-bottom: 20px;
+    }
+    iframe {
+      border: none;
+      width: 650px;
+      height: 450px;
+      margin: 0 auto;
+      display: block;
+    }
+    section.findings {
+      max-width: 800px;
+      margin: 40px auto;
+      text-align: left;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    section.findings h3 {
+      color: #2c3e50;
+    }
+    section.findings ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Load the unified page header -->
+  <div id="shared-header"></div>
+  <script>
+    fetch("header.html")
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById("shared-header").innerHTML = data;
+      })
+      .catch(console.error);
+  </script>
+
+  <h2>Box Plot of Age Distribution by Obesity Level (Altair)</h2>
+
+  <!-- Embedding the Altair-generated chart using an iframe -->
+  <iframe src="box_plot_altair.html"></iframe>
+
+  <!-- Findings Section -->
+  <section class="findings">
+    <h3>Findings - Box Plot</h3>
+    <ul>
+      <li>Individuals with insufficient weight and normal weight tend to be younger, as seen by lower median ages.</li>
+      <li>Obesity Type I and Type II categories have higher median ages, suggesting obesity may be more prevalent in older individuals.</li>
+      <li>Overweight Level II shows a wide age spread and the highest observed ages among the groups, indicating a broader impact.</li>
+      <li>Obesity Type III exhibits a smaller interquartile range with a cluster toward younger ages when compared to Types I and II.</li>
+      <li>There are visible outliers in almost all categories, indicating significant age variability even within the same obesity level.</li>
+    </ul>
+  </section>
+</body>
+</html>
+
+
+
+
+
