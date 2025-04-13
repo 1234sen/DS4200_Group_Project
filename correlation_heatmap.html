@@ -10,6 +10,7 @@
       font-family: Arial, sans-serif;
       margin: 20px;
       color: #333;
+      text-align: center; /* Center-align text and block-level containers */
     }
     nav {
       background-color: #005599;
@@ -31,19 +32,22 @@
       background-color: #0077cc;
     }
     h2 {
-      text-align: center;
       color: #2c3e50;
     }
     p.description {
-      text-align: center;
       max-width: 800px;
       margin: 0 auto 20px;
       font-size: 16px;
     }
-    #vis {
-      display: flex;
-      justify-content: center;
-      width: 100%;
+    /* Container with fixed width for the charts, centered */
+    .chart-container {
+      width: 800px;
+      margin: 0 auto;
+    }
+    #vis, #barChart {
+      margin-top: 20px;
+    }
+    #featureSelectContainer {
       margin-top: 20px;
     }
     section.findings {
@@ -51,6 +55,7 @@
       margin: 40px auto;
       font-size: 16px;
       line-height: 1.6;
+      text-align: left; /* For easier reading */
     }
     section.findings h3 {
       color: #2c3e50;
@@ -81,7 +86,19 @@
     Red tones indicate strong positive correlation, blue tones indicate strong negative correlation, and values near 0 indicate little to no linear relationship.
   </p>
 
-  <div id="vis"></div>
+  <!-- Heatmap container -->
+  <div id="vis" class="chart-container"></div>
+
+  <!-- Dropdown for selecting a feature -->
+  <div id="featureSelectContainer">
+    <label for="featureSelect"><strong>Select a feature:</strong></label>
+    <select id="featureSelect">
+      <option value="">--Select Feature--</option>
+    </select>
+  </div>
+
+  <!-- Bar chart container -->
+  <div id="barChart" class="chart-container"></div>
 
   <!-- Findings Section -->
   <section class="findings">
@@ -96,6 +113,7 @@
   </section>
 
   <script>
+    // Function to calculate the correlation matrix
     function calculateCorrelationMatrix(data, columns) {
       const matrix = [];
       function mean(arr) {
@@ -131,7 +149,7 @@
       header: true,
       dynamicTyping: true,
       complete: function(results) {
-        // Remove any empty rows
+        // Remove empty rows
         const rawData = results.data;
         const data = rawData.filter(row => Object.values(row).some(v => v !== null && v !== ''));
 
@@ -144,13 +162,12 @@
           }
         });
 
-        // Define the numerical columns including BMI
+        // Define numerical columns including BMI
         const numericCols = ["Age", "Height", "Weight", "BMI", "FCVC", "NCP", "CH2O", "FAF", "TUE"];
-
         // Calculate the correlation matrix
         const corrMatrix = calculateCorrelationMatrix(data, numericCols);
 
-        // Create annotations for each cell in the heatmap
+        // Plot the heatmap with annotations
         const annotations = [];
         for (let i = 0; i < numericCols.length; i++) {
           for (let j = 0; j < numericCols.length; j++) {
@@ -166,9 +183,7 @@
             });
           }
         }
-
-        // Set up the heatmap trace
-        const trace = {
+        const heatmapTrace = {
           z: corrMatrix,
           x: numericCols,
           y: numericCols,
@@ -182,9 +197,7 @@
             titleside: 'right'
           }
         };
-
-        // Define the layout of the plot
-        const layout = {
+        const heatmapLayout = {
           title: {
             text: 'Correlation Heatmap of Obesity Dataset Variables (Including BMI)',
             x: 0.5,
@@ -203,14 +216,67 @@
           height: 800,
           margin: { t: 100 }
         };
+        Plotly.newPlot('vis', [heatmapTrace], heatmapLayout, {responsive: true});
 
-        // Render the plot using Plotly
-        Plotly.newPlot('vis', [trace], layout, {responsive: true});
+        // Populate the dropdown with feature names
+        const selectElement = document.getElementById('featureSelect');
+        numericCols.forEach(feature => {
+          const option = document.createElement('option');
+          option.value = feature;
+          option.textContent = feature;
+          selectElement.appendChild(option);
+        });
+
+        // Update the bar chart based on the selected feature
+        function updateBarChart(feature) {
+          const index = numericCols.indexOf(feature);
+          if (index === -1) return;
+          const correlations = corrMatrix[index];
+          let dataArray = [];
+          for (let i = 0; i < numericCols.length; i++) {
+            if (numericCols[i] !== feature) { // exclude self-correlation
+              dataArray.push({ feature: numericCols[i], value: correlations[i] });
+            }
+          }
+          // Sort correlations in descending order
+          dataArray.sort((a, b) => b.value - a.value);
+          const xValues = dataArray.map(d => d.value);
+          const yValues = dataArray.map(d => d.feature);
+
+          const barTrace = {
+            x: xValues,
+            y: yValues,
+            type: 'bar',
+            orientation: 'h',
+            marker: {
+              color: xValues.map(val => val >= 0 ? 'steelblue' : 'indianred')
+            }
+          };
+          const barLayout = {
+            title: 'Correlation of ' + feature + ' with Other Variables',
+            xaxis: { title: 'Correlation Value', range: [-1, 1] },
+            margin: { l: 100, r: 50, t: 50, b: 50 },
+            width: 800
+          };
+          Plotly.newPlot('barChart', [barTrace], barLayout, {responsive: true});
+        }
+
+        // Add event listener for feature selection
+        selectElement.addEventListener('change', function() {
+          const selectedFeature = this.value;
+          if (selectedFeature) {
+            updateBarChart(selectedFeature);
+          } else {
+            document.getElementById('barChart').innerHTML = "";
+          }
+        });
       }
     });
   </script>
 </body>
 </html>
+
+
 
 
 
