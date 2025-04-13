@@ -4,12 +4,13 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>Physical Activity Level vs Obesity Level</title>
+  <title>Physical Activity Level vs Obesity Category Boxplot</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
       color: #333;
+      text-align: center;
     }
     nav {
       background-color: #005599;
@@ -31,60 +32,53 @@
       background-color: #0077cc;
     }
     h2 {
-      text-align: center;
       color: #2c3e50;
+      margin-top: 0.5rem;
     }
     p.description {
-      text-align: center;
       max-width: 800px;
       margin: 0 auto 20px;
       font-size: 16px;
     }
+    /* Container for the boxplot */
     #vis {
       display: flex;
       justify-content: center;
-      width: 100%;
       margin-top: 20px;
     }
-    #scatterPlot {
-      width: 800px;
-      height: 600px;
+    /* Styling the dropdown controls */
+    .controls {
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: 20px;
     }
-    select {
-      margin: 10px;
+    .controls select {
+      margin: 0 10px;
       padding: 5px;
       font-size: 14px;
     }
-    #tooltip {
-      position: absolute;
-      display: none;
-      background: white;
-      border: 1px solid #34495e;
-      padding: 8px;
-      color: #34495e;
-      font-size: 14px;
-      border-radius: 4px;
-      pointer-events: none;
-      box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
-    }
     section.findings {
-      max-width: 800px;
+      max-width: 900px;
       margin: 40px auto;
+      text-align: left;
       font-size: 16px;
       line-height: 1.6;
     }
     section.findings h3 {
       color: #2c3e50;
+      margin-top: 2rem;
     }
     section.findings ul {
       list-style-type: disc;
       padding-left: 20px;
+      margin: 0.5rem 0 1rem;
     }
   </style>
+  <!-- D3 for the boxplot -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-  <!-- Load the unified page header -->
+  <!-- Load the unified page header if you have one -->
   <div id="shared-header"></div>
   <script>
     fetch("header.html")
@@ -93,40 +87,29 @@
       .catch(console.error);
   </script>
 
-  <h2>Physical Activity Level vs Obesity Level</h2>
+  <h2>Physical Activity Level vs Obesity Category Boxplot</h2>
   <p class="description">
-    This scatter plot visualizes the relationship between an individual’s physical activity level (FAF) and their obesity classification.
-    Each dot represents a person, and the chart allows you to filter data by gender and transportation method.
-    Hover over the dots to view details such as Age, Weight, Gender, and Transportation.
+    This interactive boxplot displays the distribution of physical activity level (FAF) across obesity categories.
+    The obesity categories appear in this sequence:
+    <em>Insufficient Weight, Normal Weight, Overweight Level I, Overweight Level II, Obesity Type I, Obesity Type II, and Obesity Type III.</em>
+    Use the dropdown filters to explore patterns by gender and transportation method.
+    Adjusted margins and rotation angles ensure the x-axis labels and title don't overlap.
   </p>
 
-  <div style="text-align:center;">
+  <!-- Controls for filtering -->
+  <div class="controls">
     <label for="genderSelect">Select Gender: </label>
     <select id="genderSelect"></select>
     <label for="mtransSelect">Select Transportation Method: </label>
     <select id="mtransSelect"></select>
   </div>
 
-  <div id="vis">
-    <div id="scatterPlot"></div>
-  </div>
-  <div id="tooltip"></div>
-
-  <!-- Findings Section -->
-  <section class="findings">
-  <h3>Findings - Scatterplot</h3>
-  <ul>
-    <li>Individuals with higher obesity classifications (especially Obesity Type II and III) tend to cluster around lower physical activity levels (FAF between 0 and 1).</li>
-    <li>Normal weight and insufficient weight individuals display a broader spread in physical activity, with some outliers having very high activity levels.</li>
-    <li><strong>Gender Differences:</strong> Female individuals in Obesity Type III show relatively low physical activity. Males in Obesity Type II also show dense clustering at low FAF values.</li>
-    <li><strong>Transportation Influence:</strong> Among males using public transportation, low physical activity still aligns with higher obesity categories. Automobile users (especially male) exhibit very limited physical activity and a stronger concentration in Obesity Type II and I.</li>
-    <li>Overall, the chart supports a negative trend between physical activity and obesity level — lower activity is more common in higher obesity classes, particularly in males and those using passive transport modes.</li>
-  </ul>
-  </section>
-
+  <!-- Boxplot Container -->
+  <div id="vis"></div>
 
   <script>
     d3.csv('ObesityDataSet_raw_and_data_sinthetic.csv').then(function(data) {
+      // Parse numerical values
       data.forEach(function(d) {
         d.Age = +d.Age;
         d.Height = +d.Height;
@@ -134,106 +117,20 @@
         d.FAF = +d.FAF;
       });
 
-      const margin = {top: 50, right: 20, bottom: 60, left: 150};
+      // Adjusted margins to allow space for long category labels
+      const margin = {top: 50, right: 30, bottom: 120, left: 100};
       const width = 800 - margin.left - margin.right;
       const height = 600 - margin.top - margin.bottom;
 
-      const svgContainer = d3.select("#scatterPlot")
-        .append("svg")
+      // Create SVG container
+      const svgContainer = d3.select("#vis").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
 
-      svgContainer.append("text")
-        .attr("x", (width + margin.left + margin.right) / 2)
-        .attr("y", margin.top / 2)
-        .attr("text-anchor", "middle")
-        .style("font-size", "20px")
-        .style("font-weight", "bold")
-        .text("Physical Activity Level vs Obesity Level");
-
       const svg = svgContainer.append("g")
-        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+        .attr("transform", `translate(${margin.left},${margin.top})`);
 
-      const NObeyesdadCategories = [...new Set(data.map(d => d.NObeyesdad))].sort();
-      const yScale = d3.scaleBand()
-        .domain(NObeyesdadCategories)
-        .range([height, 0])
-        .padding(0.1);
-
-      const xExtent = d3.extent(data, d => d.FAF);
-      const xScale = d3.scaleLinear()
-        .domain([xExtent[0], xExtent[1]])
-        .nice()
-        .range([0, width]);
-
-      const xAxis = d3.axisBottom(xScale);
-      svg.append("g")
-        .attr("transform", `translate(0, ${height})`)
-        .call(xAxis)
-        .append("text")
-        .attr("x", width / 2)
-        .attr("y", 45)
-        .attr("fill", "#34495e")
-        .style("text-anchor", "middle")
-        .style("font-size", "14px")
-        .style("font-weight", "bold")
-        .text("Physical Activity Level (FAF)");
-
-      const yAxis = d3.axisLeft(yScale);
-      svg.append("g")
-        .call(yAxis)
-        .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("x", -height / 2)
-        .attr("y", -110)
-        .attr("fill", "#34495e")
-        .style("text-anchor", "middle")
-        .style("font-size", "14px")
-        .style("font-weight", "bold")
-        .text("Obesity Level");
-
-      const tooltip = d3.select("#tooltip");
-
-      function filterData() {
-        const selectedGender = document.getElementById("genderSelect").value;
-        const selectedMTRANS = document.getElementById("mtransSelect").value;
-        return data.filter(d =>
-          (selectedGender === "All" || d.Gender === selectedGender) &&
-          (selectedMTRANS === "All" || d.MTRANS === selectedMTRANS)
-        );
-      }
-
-      function updatePlot() {
-        const filteredData = filterData();
-        const circles = svg.selectAll("circle").data(filteredData, d => d.ID);
-        circles.exit().remove();
-        circles.enter()
-          .append("circle")
-          .attr("cx", d => xScale(d.FAF))
-          .attr("cy", d => yScale(d.NObeyesdad) + yScale.bandwidth() / 2)
-          .attr("r", 5)
-          .attr("fill", "#2980b9")
-          .on("mouseover", function(event, d) {
-            d3.select(this).transition().duration(200).attr("r", 8);
-            tooltip.style("display", "block")
-              .html(`<strong>Age:</strong> ${d.Age}<br>
-                     <strong>Weight:</strong> ${d.Weight}<br>
-                     <strong>Gender:</strong> ${d.Gender}<br>
-                     <strong>Transportation:</strong> ${d.MTRANS}`)
-              .style("left", (event.pageX + 10) + "px")
-              .style("top", (event.pageY - 10) + "px");
-          })
-          .on("mouseout", function() {
-            d3.select(this).transition().duration(200).attr("r", 5);
-            tooltip.style("display", "none");
-          })
-          .merge(circles)
-          .transition()
-          .duration(500)
-          .attr("cx", d => xScale(d.FAF))
-          .attr("cy", d => yScale(d.NObeyesdad) + yScale.bandwidth() / 2);
-      }
-
+      // Define dropdown filters
       const genderOptions = ["All", "Female", "Male"];
       d3.select("#genderSelect")
         .selectAll("option")
@@ -252,13 +149,221 @@
         .text(d => d)
         .attr("value", d => d);
 
+      // Function to filter data based on dropdown selections
+      function filterData() {
+        const selectedGender = document.getElementById("genderSelect").value;
+        const selectedMTRANS = document.getElementById("mtransSelect").value;
+        return data.filter(d =>
+          (selectedGender === "All" || d.Gender === selectedGender) &&
+          (selectedMTRANS === "All" || d.MTRANS === selectedMTRANS)
+        );
+      }
+
+      // Predefined obesity categories in the desired order
+      const obesityCategories = [
+        "Insufficient_Weight",
+        "Normal_Weight",
+        "Overweight_Level_I",
+        "Overweight_Level_II",
+        "Obesity_Type_I",
+        "Obesity_Type_II",
+        "Obesity_Type_III"
+      ];
+
+      // Create scales
+      const xScale = d3.scaleBand()
+        .domain(obesityCategories)
+        .range([0, width])
+        .paddingInner(0.3)
+        .paddingOuter(0.2);
+
+      const yScale = d3.scaleLinear()
+        .range([height, 0])
+        .nice();
+
+      // Append x-axis
+      const xAxis = d3.axisBottom(xScale);
+      const xAxisGroup = svg.append("g")
+        .attr("class", "x-axis")
+        .attr("transform", `translate(0, ${height})`)
+        .call(xAxis);
+
+      // Rotate and style the x-axis category labels
+      xAxisGroup.selectAll("text")
+        .style("font-size", "12px")
+        .attr("text-anchor", "end")
+        .attr("dx", "-0.6em")
+        .attr("dy", "0.15em")
+        .attr("transform", "rotate(-30)");
+
+      // Append x-axis label (pushed further down)
+      svg.append("text")
+          .attr("class", "x axis-label")
+          .attr("x", width / 2)
+          .attr("y", height + 85)
+          .attr("text-anchor", "middle")
+          .style("font-size", "16px")
+          .style("font-weight", "bold")
+          .text("Obesity Category");
+
+      // Append y-axis group
+      const yAxisGroup = svg.append("g")
+        .attr("class", "y-axis");
+
+      // Append y-axis label
+      svg.append("text")
+          .attr("class", "y axis-label")
+          .attr("transform", "rotate(-90)")
+          .attr("x", -height / 2)
+          .attr("y", -margin.left + 40)
+          .attr("text-anchor", "middle")
+          .style("font-size", "16px")
+          .style("font-weight", "bold")
+          .text("Physical Activity Level (FAF)");
+
+      // Function to compute boxplot statistics for each obesity category
+      function computeBoxPlotStats(filteredData) {
+        // Group data by obesity category
+        const grouped = d3.groups(filteredData, d => d.NObeyesdad);
+        const stats = [];
+        obesityCategories.forEach(cat => {
+          // Grab the subset of data for this category
+          const values = (grouped.find(g => g[0] === cat) || [cat, []])[1]
+            .map(d => d.FAF)
+            .sort(d3.ascending);
+          if (values.length > 0) {
+            const q1 = d3.quantile(values, 0.25);
+            const median = d3.quantile(values, 0.5);
+            const q3 = d3.quantile(values, 0.75);
+            const interQuantileRange = q3 - q1;
+            // Whiskers calculated as within 1.5 * IQR from Q1 and Q3
+            const min = d3.max([d3.min(values), q1 - 1.5 * interQuantileRange]);
+            const max = d3.min([d3.max(values), q3 + 1.5 * interQuantileRange]);
+            stats.push({
+              category: cat,
+              values: values,
+              q1: q1,
+              median: median,
+              q3: q3,
+              min: min,
+              max: max
+            });
+          } else {
+            stats.push({
+              category: cat,
+              values: [],
+              q1: null,
+              median: null,
+              q3: null,
+              min: null,
+              max: null
+            });
+          }
+        });
+        return stats;
+      }
+
+      // Main update function to draw/update the boxplot
+      function updatePlot() {
+        const filteredData = filterData();
+        const stats = computeBoxPlotStats(filteredData);
+
+        // Update yScale domain using the filtered data
+        const allFAF = filteredData.map(d => d.FAF);
+        if (allFAF.length > 0) {
+          yScale.domain([d3.min(allFAF), d3.max(allFAF)]);
+        } else {
+          // If there's no data, set a default domain
+          yScale.domain([0, 1]);
+        }
+        yAxisGroup.transition().duration(500).call(d3.axisLeft(yScale));
+
+        // Draw the rectangles ("boxes")
+        const boxes = svg.selectAll(".box").data(stats, d => d.category);
+        boxes.exit().remove();
+
+        // Update existing boxes
+        boxes.transition().duration(500)
+          .attr("x", d => xScale(d.category))
+          .attr("width", xScale.bandwidth())
+          .attr("y", d => (d.q3 !== null) ? yScale(d.q3) : yScale(0))
+          .attr("height", d => (d.q1 !== null) ? (yScale(d.q1) - yScale(d.q3)) : 0);
+
+        // Append new boxes if needed
+        boxes.enter()
+          .append("rect")
+          .attr("class", "box")
+          .attr("x", d => xScale(d.category))
+          .attr("width", xScale.bandwidth())
+          .attr("y", d => (d.q3 !== null) ? yScale(d.q3) : yScale(0))
+          .attr("height", d => (d.q1 !== null) ? (yScale(d.q1) - yScale(d.q3)) : 0)
+          .attr("fill", "#3498db")
+          .attr("opacity", 0.7);
+
+        // Median lines
+        const medians = svg.selectAll(".median").data(stats, d => d.category);
+        medians.exit().remove();
+
+        medians.transition().duration(500)
+          .attr("x1", d => xScale(d.category))
+          .attr("x2", d => xScale(d.category) + xScale.bandwidth())
+          .attr("y1", d => (d.median !== null) ? yScale(d.median) : yScale(0))
+          .attr("y2", d => (d.median !== null) ? yScale(d.median) : yScale(0));
+
+        medians.enter()
+          .append("line")
+          .attr("class", "median")
+          .attr("x1", d => xScale(d.category))
+          .attr("x2", d => xScale(d.category) + xScale.bandwidth())
+          .attr("y1", d => (d.median !== null) ? yScale(d.median) : yScale(0))
+          .attr("y2", d => (d.median !== null) ? yScale(d.median) : yScale(0))
+          .attr("stroke", "black")
+          .attr("stroke-width", 2);
+
+        // Whiskers (min & max lines)
+        const whiskers = svg.selectAll(".whisker").data(stats, d => d.category);
+        whiskers.exit().remove();
+
+        whiskers.transition().duration(500)
+          .attr("x1", d => xScale(d.category) + xScale.bandwidth() / 2)
+          .attr("x2", d => xScale(d.category) + xScale.bandwidth() / 2)
+          .attr("y1", d => (d.min !== null) ? yScale(d.min) : yScale(0))
+          .attr("y2", d => (d.max !== null) ? yScale(d.max) : yScale(0));
+
+        whiskers.enter().append("line")
+          .attr("class", "whisker")
+          .attr("x1", d => xScale(d.category) + xScale.bandwidth() / 2)
+          .attr("x2", d => xScale(d.category) + xScale.bandwidth() / 2)
+          .attr("y1", d => (d.min !== null) ? yScale(d.min) : yScale(0))
+          .attr("y2", d => (d.max !== null) ? yScale(d.max) : yScale(0))
+          .attr("stroke", "black")
+          .attr("stroke-width", 1);
+      }
+
+      // Attach change events to filter controls
       d3.select("#genderSelect").on("change", updatePlot);
       d3.select("#mtransSelect").on("change", updatePlot);
 
+      // Initial plot update
       updatePlot();
     });
   </script>
+
+  <!-- Combined Findings Section -->
+  <section class="findings">
+    <h3>Findings - Scatterplot</h3>
+    <ul>
+      <li>Individuals with higher obesity classifications (Obesity Type II & III) tend to cluster around lower FAF (0–1).</li>
+      <li>Normal weight and insufficient weight individuals show a broader spread of physical activity levels.</li>
+      <li><strong>Gender Differences:</strong> Females in Obesity Type III show low physical activity; males in Obesity Type II cluster at low FAF.</li>
+      <li><strong>Transportation:</strong> Males using public transportation still align low FAF with higher obesity; automobile users often have very limited physical activity and concentrate in Obesity Type II & I.</li>
+      <li>Overall, a negative trend emerges: lower activity is common in higher obesity classes, particularly for males and passive transport modes.</li>
+    </ul>
+  </section>
 </body>
 </html>
+
+
+
 
 
