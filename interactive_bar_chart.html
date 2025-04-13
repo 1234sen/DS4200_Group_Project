@@ -10,6 +10,7 @@
       font-family: Arial, sans-serif;
       margin: 20px;
       color: #333;
+      text-align: center;
     }
     nav {
       background-color: #005599;
@@ -31,32 +32,30 @@
       background-color: #0077cc;
     }
     h2 {
-      text-align: center;
       color: #2c3e50;
     }
     p.description {
-      text-align: center;
       max-width: 800px;
       margin: 0 auto 20px;
       font-size: 16px;
     }
+    /* Container for the Vega-Lite visualization */
     #vis {
-      display: flex;
-      justify-content: center;
-      width: 100%;
-      margin-top: 20px;
+      margin: 20px auto;
+      max-width: 600px;
     }
     section.findings {
       max-width: 800px;
       margin: 40px auto;
       font-size: 16px;
       line-height: 1.6;
+      text-align: left;
     }
     section.findings h3 {
       color: #2c3e50;
     }
   </style>
-  <!-- Load Vega, Vega-Lite & Vega-Embed libraries -->
+  <!-- Load Vega, Vega-Lite, and Vega-Embed libraries -->
   <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
@@ -67,59 +66,56 @@
   <script>
     fetch("header.html")
       .then(response => response.text())
-      .then(data => document.getElementById("shared-header").innerHTML = data)
+      .then(data => {
+        document.getElementById("shared-header").innerHTML = data;
+      })
       .catch(console.error);
   </script>
 
   <h2>Distribution of Obesity Levels by Gender and Age Group</h2>
   <p class="description">
-    This interactive bar chart displays the distribution of obesity levels within the population.
-    Use the dropdown filters to explore patterns by gender and age group. Hover over each bar
-    to see detailed counts.
+    This interactive bar chart displays the distribution of obesity levels within the population, sorted in sequential order from Insufficient, Normal, Overweight, Obesity I, Obesity II, to Obesity III.
+    Use the dropdown filters below to explore patterns by gender and age group.
+    Hover over each bar to see the detailed count.
   </p>
 
   <div id="vis"></div>
 
-  <!-- Findings Section -->
-<!--  <section class="findings">-->
-<!--    <h3>Findings - Interactive Bar Graph Obesity Distribution by Filter</h3>-->
-<!--    <p><strong>Obesity Levels by Gender:</strong> Gender difference in obesity types, with men predominantly categorized in Obesity Type II and women in Obesity Type III.</p>-->
-<!--    <p><strong>Obesity Levels by Age:</strong>Different age groups show varying obesity levels. Younger age groups may have a lower obesity rate compared to older age groups, or vice versa.</p>-->
-<!--    <p><strong>Interactive Insights:</strong>Observing the trends when filtered by both age and gender can help identify specific high-risk subgroups.</p>-->
-<!--    <p><strong>Implications:</strong> Other factors may be needed such as physical activity and diet.</p>-->
-<!--  </section>-->
-
   <section class="findings">
-  <h3>Findings - Interactive Bar Graph Obesity Distribution by Filter</h3>
-
-  <p><strong>Overall Distribution:</strong></p>
-  <ul>
-    <li>Obesity Type I and Type III are the most common categories overall, followed by Type II.</li>
-    <li>Normal weight and underweight categories are less represented in the full dataset.</li>
-  </ul>
-
-  <p><strong>Obesity Levels by Gender:</strong></p>
-  <ul>
-    <li><strong>Male:</strong> Obesity Type II is the most dominant category, followed by Obesity Type I and Overweight Level II. Obesity Type III is nearly absent in males.</li>
-    <li><strong>Female:</strong> Obesity Type III is significantly more common, along with a larger proportion of underweight individuals compared to males.</li>
-  </ul>
-
-  <p><strong>Obesity Levels by Age:</strong></p>
-  <ul>
-  <li><strong>10–20 age group:</strong> Most individuals fall into the Insufficient and Normal Weight categories. Obesity Types II and III are nearly absent, suggesting low obesity risk at younger ages.</li>
-  <li><strong>20–30 age group:</strong> Obesity becomes more prevalent, especially Obesity Type III, which is the most common. Normal and overweight levels are also common, showing early adulthood as a transition point.</li>
-  <li><strong>30–40 age group:</strong> This group shows a sharp increase in Obesity Type II and Overweight Levels. Normal and underweight categories become less common, indicating increased obesity risk in this decade.</li>
-  <li><strong>40–50 age group:</strong> Obesity Types I and II dominate. Very few individuals remain in the Normal or Underweight categories, suggesting advanced age links to higher obesity prevalence.</li>
-  <li><strong>50–60 age group:</strong> Small sample size, but Overweight Level II is predominant, with almost no representation in the Obesity Type III category. This may reflect lifestyle shifts or health interventions.</li>
-  </ul>
-
-
-  <p><strong>Implications:</strong> Tailored intervention strategies may be needed for different genders and age groups. Promoting early healthy habits in youth could help prevent obesity in adulthood.</p>
+    <h3>Findings - Interactive Bar Graph Obesity Distribution by Filter</h3>
+    <p><strong>Overall Distribution:</strong></p>
+    <ul>
+      <li>Obesity Type I and Obesity Type III are the most common categories overall, followed by Obesity Type II.</li>
+      <li>Normal weight and underweight categories are less represented in the full dataset.</li>
+    </ul>
+    <p><strong>Obesity Levels by Gender:</strong></p>
+    <ul>
+      <li><strong>Male:</strong> Obesity Type II is the most dominant category, followed by Obesity Type I and Overweight Level II. Obesity Type III is nearly absent in males.</li>
+      <li><strong>Female:</strong> Obesity Type III is significantly more common, along with a larger proportion of underweight individuals compared to males.</li>
+    </ul>
+    <p><strong>Obesity Levels by Age:</strong></p>
+    <ul>
+      <li><strong>10–20 age group:</strong> Most individuals fall into the Insufficient and Normal Weight categories. Obesity Types II and III are nearly absent.</li>
+      <li><strong>20–30 age group:</strong> Obesity becomes more prevalent, with Obesity Type III as the most common category.</li>
+      <li><strong>30–40 age group:</strong> There is a sharp increase in Obesity Type II and Overweight Levels.</li>
+      <li><strong>40–50 age group:</strong> Obesity Types I and II dominate, while Normal and Underweight categories become less common.</li>
+      <li><strong>50–60 age group:</strong> Overweight Level II is predominant, with almost no Obesity Type III.</li>
+    </ul>
+    <p><strong>Implications:</strong> Tailored intervention strategies may be needed for different genders and age groups. Promoting early healthy habits in youth could help prevent obesity in adulthood.</p>
   </section>
-
 
   <script>
     (function(vegaEmbed) {
+      // Define the custom ordering of obesity levels
+      const obesityOrder = [
+        "Insufficient",
+        "Normal",
+        "Overweight",
+        "Obesity I",
+        "Obesity II",
+        "Obesity III"
+      ];
+
       var spec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
         "data": {
@@ -171,7 +167,7 @@
             "type": "nominal",
             "title": "Obesity Level",
             "axis": {"labelAngle": 45},
-            "sort": {"op": "count", "order": "descending"}
+            "sort": obesityOrder
           },
           "y": {
             "aggregate": "count",
@@ -181,7 +177,9 @@
           "color": {
             "field": "NObeyesdad",
             "type": "nominal",
-            "title": "Obesity Level"
+            "title": "Obesity Level",
+            "scale": { "scheme": "blues" },
+            "sort": obesityOrder
           },
           "opacity": {
             "condition": {"selection": "hover", "value": 1},
@@ -206,12 +204,15 @@
       };
 
       vegaEmbed("#vis", spec, {mode: "vega-lite"}).catch(function(err) {
-        document.getElementById("vis").innerHTML = "<p style='color:red;'>Error: " + err.message + "</p>";
+        document.getElementById("vis").innerHTML =
+          "<p style='color:red;'>Error: " + err.message + "</p>";
         console.error(err);
       });
     })(vegaEmbed);
   </script>
 </body>
 </html>
+
+
 
 
