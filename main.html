@@ -13,7 +13,7 @@
       line-height: 1.6;
     }
 
-    h2, h3 {
+    h2, h3, h4 {
       color: #2c3e50;
     }
 
@@ -77,32 +77,37 @@
 
   <div class="section">
     <h2>Topic Introduction</h2>
-      <p>Obesity is a key health metric that reflects an individual's overall health and fitness.
-        Accurate prediction of obesity using physical metrics combined with lifestyle factors like dietary habits and physical activity can provide comprehensive insights into an individual's risk for chronic diseases.
-        As a group, we decided that we were interested in health and wellness and wanted to leverage data to investigate some factors that may impact future health.
-        This project seeks to analyze the Body Fat Prediction dataset, which contains physical attributes and corresponding body fat measurements, to explore how various factors contribute to body fat prediction.
-        Understanding these relationships can help improve personalized health recommendations and healthcare outcomes.</p>
-
-
-  <div class="section">
-  <h2>Data Description</h2>
-  <p>
-    Our analysis uses the
-    <a href="https://archive.ics.uci.edu/dataset/544/estimation+of+obesity+levels+based+on+eating+habits+and+physical+condition" target="_blank">
-      “Estimation of Obesity Levels Based On Eating Habits and Physical Condition”
-    </a>
-    from UC Irvine Machine Learning Repository. The dataset includes synthetic and real data collected from individuals, capturing various lifestyle and health-related behaviors.
-  </p>
-  <p>
-    It contains <strong>2111 records</strong> and <strong>17 attributes</strong>. The target variable, <code>NObeyesdad</code>, categorizes obesity levels into 7 classes:
-    Insufficient Weight, Normal Weight, Overweight Level I, Overweight Level II, Obesity Type I, Obesity Type II, and Obesity Type III.
-  </p>
-  <p>
-    The remaining 16 features represent demographic (e.g., age, gender), anthropometric (height, weight), and lifestyle attributes such as physical activity frequency, food intake habits, water consumption, and time spent on electronic devices.
-  </p>
+    <p>
+      Obesity is a key health metric that reflects an individual's overall health and fitness.
+      Accurate prediction of obesity using physical metrics combined with lifestyle factors like dietary habits and physical activity
+      can provide comprehensive insights into an individual's risk for chronic diseases.
+      As a group, we decided that we were interested in health and wellness and wanted to leverage data to investigate some factors that may impact future health.
+      This project seeks to analyze the Body Fat Prediction dataset, which contains physical attributes and corresponding body fat measurements,
+      to explore how various factors contribute to body fat prediction. Understanding these relationships can help improve personalized health recommendations and healthcare outcomes.
+    </p>
   </div>
 
-    <p><strong>Example records from the dataset:</strong></p>
+  <div class="section">
+    <h2>Data Description</h2>
+    <p>
+      Our analysis uses the
+      <a href="https://archive.ics.uci.edu/dataset/544/estimation+of+obesity+levels+based+on+eating+habits+and+physical+condition" target="_blank">
+        “Estimation of Obesity Levels Based On Eating Habits and Physical Condition”
+      </a>
+      from UC Irvine Machine Learning Repository. The dataset includes synthetic and real data collected from individuals, capturing various lifestyle and health-related behaviors.
+    </p>
+    <p>
+      It contains <strong>2111 records</strong> and <strong>17 attributes</strong>. The target variable, <code>NObeyesdad</code>,
+      categorizes obesity levels into 7 classes:
+      Insufficient Weight, Normal Weight, Overweight Level I, Overweight Level II, Obesity Type I, Obesity Type II, and Obesity Type III.
+    </p>
+    <p>
+      The remaining 16 features represent demographic (e.g., age, gender), anthropometric (height, weight),
+      and lifestyle attributes such as physical activity frequency, food intake habits, water consumption, and time spent on electronic devices.
+    </p>
+  </div>
+
+  <p><strong>Example records from the dataset:</strong></p>
   <table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; width: 100%; font-size: 14px; margin-top: 10px;">
     <thead style="background-color: #f2f2f2;">
       <tr>
@@ -167,96 +172,125 @@
     </tbody>
   </table>
 
-
-
   <div class="section">
     <h2>1. Correlation Heatmap</h2>
-    <p><strong>Key Insight:</strong> The heatmap shows correlations between numerical variables, for example, weight has a strong positive correlation with obesity level.
-      Interactive features allow users to hover to view specific values.</p>
+    <p>
+      <strong>Key Insight:</strong> The heatmap shows correlations between numerical variables, for example,
+      weight has a strong positive correlation with obesity level.
+      Interactive features allow users to hover to view specific values.
+    </p>
     <p><a href="correlation_heatmap.html">View Heatmap Visualization</a></p>
   </div>
 
   <div class="section">
     <h2>2. Obesity Distribution by Gender & Age</h2>
-    <p><strong>Key Insight:</strong> The bar chart shows the population distribution of obesity levels. Users can filter data by gender or age group through dropdown menus to discover obesity patterns in specific groups.
+    <p>
+      <strong>Key Insight:</strong> The bar chart shows the population distribution of obesity levels.
+      Users can filter data by gender or age group through dropdown menus to discover obesity patterns in specific groups.
     </p>
     <p><a href="interactive_bar_chart.html">View Bar Chart Visualization</a></p>
   </div>
 
   <div class="section">
     <h2>3. Physical Activity vs Obesity (Scatter Plot)</h2>
-    <p><strong>Key Insight:</strong> The scatter plot shows the relationship between physical activity level (FAF) and obesity level. Hovering displays individual details,
-      and filtering features reveal the influence of gender and transportation methods.</p>
+    <p>
+      <strong>Key Insight:</strong> The scatter plot shows the relationship between physical activity level (FAF) and obesity level.
+      Hovering displays individual details, and filtering features reveal the influence of gender and transportation methods.
+    </p>
     <p><a href="scatter_plot.html">View Scatter Plot Visualization</a></p>
   </div>
 
   <div class="section">
     <h2>4. Age Distribution by Obesity Category (Boxplot)</h2>
-    <p><strong>Key Insight:</strong> This box plot illustrates the variation in age across different obesity categories. Each box represents the age distribution for a specific obesity level,
-      showing the median, quartiles, and outliers.</p>
+    <p>
+      <strong>Key Insight:</strong> This box plot illustrates the variation in age across different obesity categories.
+      Each box represents the age distribution for a specific obesity level, showing the median, quartiles, and outliers.
+    </p>
     <p><a href="box_plot.html">View Box Plot Visualization</a></p>
     <p>Alternatively, check out the Altair version: <a href="box_plot_extract_altair.html">View Altair Box Plot Visualization</a></p>
   </div>
 
-
   <div class="section">
     <h2>5. Transportation Method & Obesity (Stacked Bar)</h2>
-    <p><strong>Key Insight:</strong> Select an obesity level to view its proportion across different transportation methods. The chart dynamically filters and updates based on your choice.</p>
+    <p>
+      <strong>Key Insight:</strong> Select an obesity level to view its proportion across different transportation methods.
+      The chart dynamically filters and updates based on your choice.
+    </p>
     <p><a href="transportation_obesity_proportions.html">View Stacked Bar Chart Visualization</a></p>
   </div>
 
-
   <div class="section">
-  <h2>Interactive Features Overview</h2>
-  <p>
-    Several of the visualizations in this analysis are <strong>interactive</strong>, allowing you to explore patterns in the data beyond what a static chart can show.
-    These interactive elements make it easier to spot trends, filter by categories, and drill down into specific subgroups.
-  </p>
-  <ul>
-    <li><strong>Scatter Plot (Section 3):</strong> You can <em>brush-select</em> groups of individuals based on their physical activity and see how transportation method distributions change in real-time.</li>
-    <li><strong>Bar Charts (Sections 2 and 5):</strong> Use <em>dropdown filters</em> to explore how obesity levels vary across gender, age, and transportation type.</li>
-    <li><strong>Correlation Heatmap (Section 1):</strong> <em>Hover</em> over each cell to explore precise correlation values, and use the <em>dropdown menu</em> to see how each feature correlates with others in ranked order.</li>
-  </ul>
-  <p>
-    These interactive features are not just visual enhancements — they offer powerful ways to uncover relationships, test assumptions, and identify at-risk groups within the dataset.
-    Try clicking, filtering, and hovering to learn more!
-  </p>
+    <h2>Interactive Features Overview</h2>
+    <p>
+      Several of the visualizations in this analysis are <strong>interactive</strong>,
+      allowing you to explore patterns in the data beyond what a static chart can show.
+      These interactive elements make it easier to spot trends, filter by categories, and drill down into specific subgroups.
+    </p>
+    <ul>
+      <li>
+        <strong>Scatter Plot (Section 3):</strong> You can <em>brush-select</em> groups of individuals based on their physical activity
+        and see how transportation method distributions change in real-time.
+      </li>
+      <li>
+        <strong>Bar Charts (Sections 2 and 5):</strong> Use <em>dropdown filters</em> to explore how obesity levels vary across
+        gender, age, and transportation type.
+      </li>
+      <li>
+        <strong>Correlation Heatmap (Section 1):</strong> <em>Hover</em> over each cell to explore precise correlation values,
+        and use the <em>dropdown menu</em> to see how each feature correlates with others in ranked order.
+      </li>
+    </ul>
+    <p>
+      These interactive features are not just visual enhancements — they offer powerful ways to uncover relationships,
+      test assumptions, and identify at-risk groups within the dataset. Try clicking, filtering, and hovering to learn more!
+    </p>
   </div>
 
-
-
-
   <div class="section">
-  <h2>Conclusions</h2>
-  <ul>
-    <li>Data analysis indicates that lower levels of physical activity and higher electronic device usage may be associated with higher obesity levels.</li>
-    <li>Unhealthy dietary choices and a sedentary lifestyle might contribute to obesity in some cases.</li>
-    <li>Observations on different transportation methods suggest that more active commuting could be linked to lower obesity prevalence.</li>
-    <li>The interplay between gender, age, and dietary behaviors suggests that tailored intervention strategies might be beneficial.</li>
-  </ul>
+    <h2>Conclusions</h2>
+    <ul>
+      <li>Data analysis indicates that lower levels of physical activity and higher electronic device usage may be associated with higher obesity levels.</li>
+      <li>Unhealthy dietary choices and a sedentary lifestyle might contribute to obesity in some cases.</li>
+      <li>Observations on different transportation methods suggest that more active commuting could be linked to lower obesity prevalence.</li>
+      <li>The interplay between gender, age, and dietary behaviors suggests that tailored intervention strategies might be beneficial.</li>
+    </ul>
   </div>
 
-
-
   <div class="section">
-  <h2>Future Work</h2>
-  <ul>
-    <li>Investigate the impact of dietary habits, including the frequency of high-calorie food consumption, frequency of vegetable intake, and the number of main meals, on obesity trends in greater detail.</li>
-    <li>Develop predictive models for early obesity risk detection using lifestyle variables such as physical activity level and electronic device usage.</li>
-    <li>Expand the dataset to include a broader demographic range and additional social determinants of health.</li>
-    <li>Examine the roles of family history and gender differences to design personalized intervention programs.</li>
-  </ul>
+    <h2>Future Work</h2>
+    <ul>
+      <li>Investigate the impact of dietary habits, including the frequency of high-calorie food consumption, frequency of vegetable intake, and the number of main meals, on obesity trends in greater detail.</li>
+      <li>Develop predictive models for early obesity risk detection using lifestyle variables such as physical activity level and electronic device usage.</li>
+      <li>Expand the dataset to include a broader demographic range and additional social determinants of health.</li>
+      <li>Examine the roles of family history and gender differences to design personalized intervention programs.</li>
+    </ul>
   </div>
-
-
 
   <div class="section">
     <h3>References</h3>
+    <!-- Code References -->
+    <h4>Code References</h4>
     <p>
       <a href="https://pandas.pydata.org/docs/">Pandas Documentation</a><br>
       <a href="https://d3js.org/">D3.js Documentation</a><br>
       <a href="https://archive.ics.uci.edu/dataset/544/estimation+of+obesity+levels+based+on+eating+habits+and+physical+condition">UCI Datasets</a>
     </p>
+
+    <!-- Academic References -->
+    <h4>Academic References</h4>
+    <p>
+      <a href="https://doi.org/10.1016/j.dib.2019.104334">
+        Palechor, Fabio Mendoza, and Alexis De La Hoz Manotas. “Dataset for Estimation of Obesity Levels Based on Eating Habits and Physical Conditions From Colombia, Peru And Mexico.”
+        <em>Data in Brief</em>, vol. 29, 2019, p. 104334.
+      </a>
+      <br>
+      <a href="https://doi.org/10.1002/osp4.14">
+        Drewnowski, A., et al. “A New Method to Visualize Obesity Prevalence in Seattle–King County at the Census Block Level.”
+        <em>Obesity Science & Practice</em>, vol. 2, no. 1, Dec. 2017, pp. 14–19.
+      </a>
+    </p>
   </div>
+
 </body>
 </html>
+
