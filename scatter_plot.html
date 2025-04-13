@@ -6,12 +6,14 @@
   <meta charset="UTF-8">
   <title>Interactive Scatter & Linked Bar Chart: Physical Activity, Obesity, and Transportation</title>
   <style>
+    /* Overall page styling */
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
       color: #333;
       text-align: center;
     }
+    /* Navigation bar styling */
     nav {
       background-color: #005599;
       display: flex;
@@ -41,6 +43,7 @@
       font-size: 16px;
       line-height: 1.4;
     }
+    /* Dropdown filters styling */
     .controls {
       text-align: center;
       margin: 20px 0;
@@ -50,6 +53,7 @@
       padding: 5px;
       font-size: 14px;
     }
+    /* Chart container styling */
     .chart-container {
       display: block;
       margin: 40px auto;
@@ -58,6 +62,7 @@
     #scatterPlot {
       margin-bottom: 60px;
     }
+    /* Findings section styling */
     section.findings {
       max-width: 900px;
       margin: 40px auto;
@@ -128,7 +133,7 @@
   <div id="barTooltip"></div>
 
   <script>
-    // Ordered obesity categories
+    // Ordered list of obesity categories
     const obesityCategories = [
       "Insufficient_Weight",
       "Normal_Weight",
@@ -139,14 +144,14 @@
       "Obesity_Type_III"
     ];
 
-    // Global variables for data
+    // Global variables to hold the full dataset and filtered version
     let fullData = [];
     let filteredData = [];
 
-    // Gender options
+    // Dropdown options for gender
     const genderOptions = ["All", "Female", "Male"];
 
-    // Load CSV data
+    // Load CSV data using D3
     d3.csv("ObesityDataSet_raw_and_data_sinthetic.csv").then(function(data) {
       data.forEach(function(d) {
         d.Age = +d.Age;
@@ -161,8 +166,9 @@
       drawBarChart(filteredData);
     });
 
-    // Populate dropdowns
+    // Populate dropdown filters
     function updateFilters() {
+      // Populate gender dropdown
       d3.select("#genderSelect")
         .selectAll("option")
         .data(genderOptions)
@@ -171,6 +177,7 @@
         .text(d => d)
         .attr("value", d => d);
 
+      // Populate transportation method dropdown with unique values
       const mtransOptions = ["All", ...new Set(fullData.map(d => d.MTRANS))];
       d3.select("#mtransSelect")
         .selectAll("option")
@@ -180,11 +187,12 @@
         .text(d => d)
         .attr("value", d => d);
 
+      // Set listeners for dropdown changes
       d3.select("#genderSelect").on("change", () => { updateFilteredData(); redrawScatterPlot(); redrawBarChart(filteredData); });
       d3.select("#mtransSelect").on("change", () => { updateFilteredData(); redrawScatterPlot(); redrawBarChart(filteredData); });
     }
 
-    // Update filtered data based on selections
+    // Update filtered data based on user selections
     function updateFilteredData() {
       const selGender = document.getElementById("genderSelect").value;
       const selMTRANS = document.getElementById("mtransSelect").value;
@@ -194,7 +202,7 @@
       );
     }
 
-    /* Scatter Plot Setup */
+    /* Setup for the Scatter Plot */
     const scatterTotalWidth = 1000,
           scatterTotalHeight = 800;
     const scatterMargin = {top: 50, right: 40, bottom: 120, left: 200},
@@ -219,14 +227,14 @@
     const scatterG = scatterSvg.append("g")
       .attr("transform", `translate(${scatterMargin.left},${scatterMargin.top})`);
 
-    // Scatter scales
+    // Define scales for scatter plot
     const xScatter = d3.scaleLinear().range([0, scatterWidth]);
     const yScatter = d3.scalePoint()
       .domain(obesityCategories)
       .range([scatterHeight, 0])
       .padding(0.5);
 
-    // Scatter axes
+    // Create scatter plot axes
     const xAxisScatter = d3.axisBottom(xScatter);
     const yAxisScatter = d3.axisLeft(yScatter);
 
@@ -236,7 +244,7 @@
     const scatterYAxisGroup = scatterG.append("g")
       .attr("class", "y-axis");
 
-    // Scatter axis labels
+    // Add axis labels to the scatter plot
     scatterG.append("text")
       .attr("class", "x axis-label")
       .attr("x", scatterWidth / 2)
@@ -256,7 +264,7 @@
       .style("font-weight", "bold")
       .text("Obesity Category");
 
-    // Brush for scatter plot
+    // Define and add brush for the scatter plot to capture selections
     const brush = d3.brush()
       .extent([[0, 0], [scatterWidth, scatterHeight]])
       .on("end", brushed);
@@ -265,6 +273,7 @@
       .attr("class", "brush")
       .call(brush);
 
+    // Function to initially draw (or update) scatter plot points
     function drawScatterPlot() {
       const fafExtent = d3.extent(filteredData, d => d.FAF);
       xScatter.domain([fafExtent[0] - 0.1, fafExtent[1] + 0.1]);
@@ -287,12 +296,14 @@
         .attr("opacity", 0.8);
     }
 
+    // Redraw scatter plot after filter changes
     function redrawScatterPlot() {
       updateFilteredData();
       drawScatterPlot();
       scatterG.select(".brush").call(brush.move, null);
     }
 
+    // Function to handle brushing events on scatter plot
     function brushed(event) {
       let selection = event.selection;
       let brushedData = [];
@@ -304,10 +315,11 @@
           return (cx >= x0 && cx <= x1 && cy >= y0 && cy <= y1);
         });
       }
+      // Update the bar chart based on the brushed data; if none are selected, use the full filtered dataset.
       drawBarChart(brushedData.length > 0 ? brushedData : filteredData);
     }
 
-    /* Bar Chart Setup */
+    /* Setup for the Bar Chart */
     const barTotalWidth = 900,
           barTotalHeight = 600;
     const barMargin = {top: 40, right: 30, bottom: 140, left: 100},
@@ -319,7 +331,7 @@
       .attr("width", barTotalWidth)
       .attr("height", barTotalHeight);
 
-    // Bar chart title
+    // Bar chart title (updated to reflect count instead of proportion)
     barSvg.append("text")
       .attr("class", "chart-title")
       .attr("x", barTotalWidth / 2)
@@ -327,20 +339,23 @@
       .attr("text-anchor", "middle")
       .style("font-size", "22px")
       .style("font-weight", "bold")
-      .text("Bar Chart: Transportation Distribution (Proportion)");
+      .text("Bar Chart: Transportation Distribution (Count)");
 
     const barG = barSvg.append("g")
       .attr("transform", `translate(${barMargin.left},${barMargin.top})`);
 
-    // Bar chart scales with increased padding (0.7)
+    // Define x-scale for bar chart with padding
     const xBar = d3.scaleBand().range([0, barWidth]).padding(0.7);
+    // y-scale will be defined based on the count values (range from 0 to maximum count)
     const yBar = d3.scaleLinear().range([barHeight, 0]);
 
+    // Format transportation method names if needed (for display)
     function formatTransport(d) {
       return d === "Public_Transportation" ? "Pub Trans" : d;
     }
+    // Define axes: update y-axis to display integer count values (no percentage formatting)
     const xAxisBar = d3.axisBottom(xBar).tickFormat(formatTransport);
-    const yAxisBar = d3.axisLeft(yBar).tickFormat(d3.format(".0%"));
+    const yAxisBar = d3.axisLeft(yBar).tickFormat(d3.format("d"));
 
     const xAxisBarGroup = barG.append("g")
       .attr("class", "x-axis")
@@ -348,6 +363,7 @@
     const yAxisBarGroup = barG.append("g")
       .attr("class", "y-axis");
 
+    // Axis label for the x-axis
     barG.append("text")
       .attr("class", "x axis-label")
       .attr("x", barWidth / 2)
@@ -357,6 +373,7 @@
       .style("font-weight", "bold")
       .text("Transportation Method");
 
+    // Axis label for the y-axis (updated to "Count")
     barG.append("text")
       .attr("class", "y axis-label")
       .attr("transform", "rotate(-90)")
@@ -365,17 +382,19 @@
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
       .style("font-weight", "bold")
-      .text("Proportion (%)");
+      .text("Count");
 
+    // Function to draw (or update) the bar chart based on data subset
     function drawBarChart(dataSubset) {
+      // Roll up the data: count the number of records for each transportation method (MTRANS)
       const counts = d3.rollup(dataSubset, v => v.length, d => d.MTRANS);
       let barData = Array.from(counts, ([MTRANS, count]) => ({MTRANS, count}));
-      const total = d3.sum(barData, d => d.count);
-      barData.forEach(d => d.proportion = d.count / total);
 
+      // Update domains: x-axis based on transportation methods and y-axis from 0 to maximum count
       xBar.domain(barData.map(d => d.MTRANS));
-      yBar.domain([0, 1]);
+      yBar.domain([0, d3.max(barData, d => d.count)]);
 
+      // Update axes with transitions
       xAxisBarGroup.transition().duration(500)
         .call(xAxisBar)
         .selectAll("text")
@@ -386,27 +405,30 @@
 
       yAxisBarGroup.transition().duration(500).call(yAxisBar);
 
+      // Bind data to bars, using transportation method as key
       const bars = barG.selectAll(".bar").data(barData, d => d.MTRANS);
       bars.exit().remove();
 
+      // Transition existing bars
       bars.transition().duration(500)
         .attr("x", d => xBar(d.MTRANS))
         .attr("width", xBar.bandwidth())
-        .attr("y", d => yBar(d.proportion))
-        .attr("height", d => barHeight - yBar(d.proportion));
+        .attr("y", d => yBar(d.count))
+        .attr("height", d => barHeight - yBar(d.count));
 
+      // Enter new bars
       bars.enter().append("rect")
         .attr("class", "bar")
         .attr("x", d => xBar(d.MTRANS))
         .attr("width", xBar.bandwidth())
-        .attr("y", d => yBar(d.proportion))
-        .attr("height", d => barHeight - yBar(d.proportion))
+        .attr("y", d => yBar(d.count))
+        .attr("height", d => barHeight - yBar(d.count))
         .attr("fill", "#f39c12")
         .attr("opacity", 0.8)
         .on("mouseover", function(event, d) {
           d3.select("#barTooltip")
             .style("display", "block")
-            .html("Transportation: " + d.MTRANS + "<br>Count: " + d.count + "<br>Proportion: " + d3.format(".1%")(d.proportion));
+            .html("Transportation: " + d.MTRANS + "<br>Count: " + d.count);
         })
         .on("mousemove", function(event, d) {
           d3.select("#barTooltip")
@@ -432,19 +454,10 @@
       <li><strong>Transportation Influence:</strong> Even among public transportation users, low FAF correlates with higher obesity; automobile users typically exhibit very limited activity and concentrate in Obesity Type I & II.</li>
       <li>A negative trend is clear: Lower physical activity is associated with higher obesity classifications—particularly for males and those using passive transport modes.</li>
     </ul>
-    <h3>Findings - Transportation Distribution (Bar Chart)</h3>
-    <ul>
-      <li><strong>Automobile Users:</strong> Show a higher prevalence of Obesity Type I & II, with fewer Normal/Underweight individuals.</li>
-      <li><strong>Bike Users:</strong> Primarily fall into Normal Weight or Overweight Level I, indicating a healthier distribution.</li>
-      <li><strong>Motorbike Users:</strong> Display a higher concentration of Obesity Type I, with fewer Normal/Insufficient Weight cases.</li>
-      <li><strong>Pub Trans:</strong> (Abbreviation for Public Transportation) have a balanced distribution across obesity levels, with notable representation in both Obesity Type II and Normal Weight.</li>
-      <li><strong>Walking Users:</strong> Exhibit the most favorable distribution overall, with the largest share in Normal Weight and very few in Obesity Type II or III.</li>
-    </ul>
-    <p><strong>Health Intervention Opportunities:</strong> Promote active transport (walking, biking) to encourage higher physical activity and healthier weight outcomes.</p>
-    <p><strong>Further Research:</strong> Investigate socioeconomic and environmental factors affecting transportation choices and obesity distribution.</p>
   </section>
 </body>
 </html>
+
 
 
 

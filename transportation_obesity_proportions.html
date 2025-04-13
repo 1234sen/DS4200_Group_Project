@@ -1,0 +1,198 @@
+<!--transportation_obesity_proportions.html-->
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>Filtered Bar Chart - Obesity & Transportation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      color: #333;
+    }
+    nav {
+      background-color: #005599;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 0.8rem;
+      margin-bottom: 20px;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    nav a:hover {
+      background-color: #0077cc;
+    }
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    p.description {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 20px;
+      font-size: 16px;
+    }
+    #vis {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin-top: 20px;
+    }
+    section.findings {
+      max-width: 800px;
+      margin: 40px auto;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    section.findings h3 {
+      color: #2c3e50;
+    }
+    section.findings ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+    section.findings p {
+      margin-top: 1em;
+    }
+  </style>
+  <!-- Load Vega libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.20.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+</head>
+<body>
+  <!-- Load the unified page header -->
+  <div id="shared-header"></div>
+  <script>
+    fetch("header.html")
+      .then(response => response.text())
+      .then(data => document.getElementById("shared-header").innerHTML = data)
+      .catch(console.error);
+  </script>
+
+<body>
+  <h2>Proportion of Selected Obesity Level by Transportation Method</h2>
+  <p class="description">
+    Select an obesity level to view its proportion across different transportation methods. The chart dynamically filters and updates based on your choice.
+  </p>
+
+  <div id="vis"></div>
+
+  <!-- Findings Section -->
+  <section class="findings">
+    <h3>Findings - Filtered Bar Chart</h3>
+    <ul>
+      <li><strong>Automobile users</strong> show a high proportion of Obesity Type I and Type II, with lower representation of normal or underweight categories.</li>
+      <li><strong>Bike users</strong> have a majority of individuals in the Normal Weight and Overweight Level I categories, suggesting healthier weight distribution.</li>
+      <li><strong>Motorbike users</strong> also show higher proportions of obesity, especially Obesity Type I, and fewer in Normal or Insufficient Weight.</li>
+      <li><strong>Public transportation users</strong> have a fairly balanced distribution across all obesity categories, including noticeable proportions in both Obesity Type II and Normal Weight.</li>
+      <li><strong>Walking users</strong> show the healthiest distribution overall, with the highest share of Normal Weight and very few individuals in Obesity Type II or III.</li>
+    </ul>
+
+    <p><strong>Health Intervention Opportunities:</strong> Encourage active transportation such as walking and biking to support healthier weight outcomes.</p>
+    <p><strong>Further Research:</strong> Explore socioeconomic or environmental factors influencing transportation choices and obesity distribution.</p>
+  </section>
+
+  <script>
+    (function(vegaEmbed) {
+      const spec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "data": {
+          "url": "ObesityDataSet_raw_and_data_sinthetic.csv",
+          "format": { "type": "csv" }
+        },
+        "params": [
+          {
+            "name": "obesity_level",
+            "value": "Obesity_Type_I",
+            "bind": {
+              "input": "select",
+              "options": [
+                "Insufficient_Weight",
+                "Normal_Weight",
+                "Overweight_Level_I",
+                "Overweight_Level_II",
+                "Obesity_Type_I",
+                "Obesity_Type_II",
+                "Obesity_Type_III"
+              ],
+              "name": "Select Obesity Level: "
+            }
+          }
+        ],
+        "transform": [
+          {
+            "joinaggregate": [
+              { "op": "count", "as": "Total" }
+            ],
+            "groupby": ["MTRANS"]
+          },
+          { "filter": "datum.NObeyesdad === obesity_level" },
+          {
+            "aggregate": [{ "op": "count", "as": "count" }],
+            "groupby": ["MTRANS", "Total"]
+          },
+          {
+            "calculate": "datum.count / datum.Total",
+            "as": "Proportion"
+          }
+        ],
+        "mark": "bar",
+        "encoding": {
+          "x": {
+            "field": "MTRANS",
+            "type": "nominal",
+            "title": "Transportation Method",
+            "sort": "-y",
+            "axis": { "labelAngle": 45 }
+          },
+          "y": {
+            "field": "Proportion",
+            "type": "quantitative",
+            "title": "Proportion (%)",
+            "axis": {
+              "format": ".0%",
+              "titleColor": "#34495e"
+            }
+          },
+          "color": {
+            "value": "#f39c12"
+          },
+          "tooltip": [
+            { "field": "MTRANS", "type": "nominal", "title": "Transport" },
+            { "field": "Proportion", "type": "quantitative", "title": "Proportion", "format": ".1%" }
+          ]
+        },
+        "title": {
+          "text": "Proportion of Selected Obesity Level by Transportation",
+          "fontSize": 18,
+          "anchor": "middle"
+        },
+        "width": 600,
+        "height": 400
+      };
+
+      vegaEmbed("#vis", spec, { mode: "vega-lite" }).catch(function(err) {
+        document.getElementById("vis").innerHTML =
+          "<p style='color:red;'>Error: " + err.message + "</p>";
+        console.error(err);
+      });
+    })(vegaEmbed);
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
