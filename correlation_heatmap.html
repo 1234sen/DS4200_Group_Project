@@ -4,7 +4,7 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>Correlation Heatmap of Obesity Dataset Variables</title>
+  <title>Correlation Heatmap of Obesity Dataset Variables including BMI</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -74,9 +74,10 @@
       .catch(console.error);
   </script>
 
-  <h2>Correlation Heatmap of Numerical Variables</h2>
+  <h2>Correlation Heatmap of Numerical Variables Including BMI</h2>
   <p class="description">
     This heatmap visualizes the pairwise correlation between numerical variables in the obesity dataset.
+    In addition to the original variables, Body Mass Index (BMI) is calculated as Weight / (Height/100)^2.
     Red tones indicate strong positive correlation, blue tones indicate strong negative correlation, and values near 0 indicate little to no linear relationship.
   </p>
 
@@ -84,22 +85,25 @@
 
   <!-- Findings Section -->
   <section class="findings">
-  <h3>Findings - Correlation Heatmap</h3>
-  <ul>
-    <li><strong>Age</strong> has a mild negative correlation with <strong>TUE</strong> (-0.30), suggesting younger individuals may spend more time using technology.</li>
-    <li><strong>Weight</strong> has a strong positive correlation with <strong>Height</strong> (0.46) and a moderate correlation with <strong>Age</strong> (0.20), which aligns with expected physical patterns.</li>
-    <li><strong>FAF</strong> (physical activity frequency) is weakly negatively correlated with <strong>Age</strong> (-0.14), suggesting that younger people may engage in slightly more physical activity.</li>
-    <li><strong>CH2O</strong> (water intake) and <strong>FAF</strong> show weak positive correlations with most health-related variables, supporting their association with healthier behaviors.</li>
-    <li><strong>TUE</strong> (time using technology) has a very strong negative correlation with age, indicating that younger people tend to spend more time using technology.</li>
-  </ul>
+    <h3>Findings - Correlation Heatmap</h3>
+    <ul>
+      <li><strong>Age</strong> has a mild negative correlation with <strong>TUE</strong> (-0.30), suggesting younger individuals may spend more time using technology.</li>
+      <li><strong>Weight</strong> shows expected correlations with <strong>Height</strong> (0.46) and also demonstrates a strong relationship with the calculated <strong>BMI</strong>.</li>
+      <li><strong>FAF</strong> (physical activity frequency) is weakly negatively correlated with <strong>Age</strong> (-0.14), indicating younger people might be slightly more active.</li>
+      <li><strong>CH2O</strong> (water intake) and <strong>FAF</strong> display weak positive correlations with most health-related variables, supporting their association with healthier behaviors.</li>
+      <li><strong>TUE</strong> (time using technology) has a strong negative correlation with age, reaffirming that younger individuals tend to spend more time on technology.</li>
+    </ul>
   </section>
-
 
   <script>
     function calculateCorrelationMatrix(data, columns) {
       const matrix = [];
-      function mean(arr) { return arr.reduce((a, b) => a + b, 0) / arr.length; }
-      function stddev(arr, avg) { return Math.sqrt(arr.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / arr.length); }
+      function mean(arr) {
+        return arr.reduce((a, b) => a + b, 0) / arr.length;
+      }
+      function stddev(arr, avg) {
+        return Math.sqrt(arr.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / arr.length);
+      }
       function pearson(x, y) {
         const avgX = mean(x), avgY = mean(y);
         const stdX = stddev(x, avgX), stdY = stddev(y, avgY);
@@ -127,10 +131,26 @@
       header: true,
       dynamicTyping: true,
       complete: function(results) {
+        // Remove any empty rows
         const rawData = results.data;
         const data = rawData.filter(row => Object.values(row).some(v => v !== null && v !== ''));
-        const numericCols = ["Age", "Height", "Weight", "FCVC", "NCP", "CH2O", "FAF", "TUE"];
+
+        // Calculate BMI for each row (assuming Height in cm and Weight in kg)
+        data.forEach(row => {
+          if (row.Height && row.Weight && row.Height > 0) {
+            row.BMI = row.Weight / Math.pow(row.Height / 100, 2);
+          } else {
+            row.BMI = null;
+          }
+        });
+
+        // Define the numerical columns including BMI
+        const numericCols = ["Age", "Height", "Weight", "BMI", "FCVC", "NCP", "CH2O", "FAF", "TUE"];
+
+        // Calculate the correlation matrix
         const corrMatrix = calculateCorrelationMatrix(data, numericCols);
+
+        // Create annotations for each cell in the heatmap
         const annotations = [];
         for (let i = 0; i < numericCols.length; i++) {
           for (let j = 0; j < numericCols.length; j++) {
@@ -146,6 +166,8 @@
             });
           }
         }
+
+        // Set up the heatmap trace
         const trace = {
           z: corrMatrix,
           x: numericCols,
@@ -160,9 +182,11 @@
             titleside: 'right'
           }
         };
+
+        // Define the layout of the plot
         const layout = {
           title: {
-            text: 'Correlation Heatmap of Obesity Dataset Variables',
+            text: 'Correlation Heatmap of Obesity Dataset Variables (Including BMI)',
             x: 0.5,
             font: { size: 22 }
           },
@@ -179,12 +203,15 @@
           height: 800,
           margin: { t: 100 }
         };
+
+        // Render the plot using Plotly
         Plotly.newPlot('vis', [trace], layout, {responsive: true});
       }
     });
   </script>
 </body>
 </html>
+
 
 
 
