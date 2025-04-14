@@ -1,16 +1,16 @@
 import altair as alt
 import pandas as pd
 
-# Read the dataset (make sure the CSV file path is correct)
+# Read the dataset
 data = pd.read_csv("ObesityDataSet_raw_and_data_sinthetic.csv")
 
 # Create an Altair box plot for age distribution by obesity level
 chart = alt.Chart(data).mark_boxplot(size=40).encode(
-    # X-axis: Obesity level as a nominal (categorical) variable with a rotated axis label for better readability
+    # X-axis: Obesity level as a nominal variable with a rotated axis label for better readability
     x=alt.X("NObeyesdad:N", title="Obesity Level", axis=alt.Axis(labelAngle=45)),
     # Y-axis: Age as a quantitative variable
     y=alt.Y("Age:Q", title="Age"),
-    # Color encoding using obesity level (no legend displayed)
+    # Color encoding using obesity level
     color=alt.Color("NObeyesdad:N", legend=None)
 ).properties(
     title="Relationship Between Age and Obesity Level",  # Chart title
